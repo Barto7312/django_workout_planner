@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'workout_planner.apps.WorkoutPlannerConfig',
+    'planner.apps.PlannerConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [

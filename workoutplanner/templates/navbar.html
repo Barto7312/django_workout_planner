@@ -1,0 +1,12 @@
+<a href="/">
+    <h1>Workout Planner</h1>
+</a>
+
+{% if request.user.is_authenticated %}
+<p>Hello {{request.user}}</p>
+<a href="{% url 'logout' %}">LOGOUT</a>
+
+{% else %}
+<a href="{% url 'login' %}">LOGIN</a>
+{% endif %}
+<hr>
