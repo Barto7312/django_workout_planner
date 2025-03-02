@@ -1,12 +1,18 @@
-<a href="/">
-    <h1>Workout Planner</h1>
-</a>
+<div class="navbar">
+    <a href="/">
+        <h1>FIT APP</h1>
+    </a>
 
-{% if request.user.is_authenticated %}
-<p>Hello {{request.user}}</p>
-<a href="{% url 'logout' %}">LOGOUT</a>
+    {% if request.user.is_authenticated %}
+    <p>Hello {{request.user}}</p>
 
-{% else %}
-<a href="{% url 'login' %}">LOGIN</a>
-{% endif %}
-<hr>
+    {% else %}
+    <p><a href="{% url 'login' %}">LOGIN</a></p>
+    {% endif %}
+    <a href= "/">Overview</a>
+    <a href= "{% url 'workout-creator' %}">Create Workout</a>
+    <a href= "{% url 'statistics' %}">Statistics</a>
+    <a href="{% url 'library' %}">Excercise List</a>
+    <a href="{% url 'logout' %}">LOGOUT</a>
+
+</div>

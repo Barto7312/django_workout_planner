@@ -1,41 +1,47 @@
-{% extends 'main.html' %}
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'styles/style.css' %}">
+    <title>Document</title>
+</head>
+<body class="login-body">
+    <div class="login-container">
+        
+        {% if page == 'login' %}
+ 
+        <h1 class = "login-app-title"> FIT APP </h1>
 
+        <hr class = "divider">
 
-{% block content %}
+        <div class="form-container">
 
-{% if page == 'login' %}
-<h1> LOGIN PAGE </h1>
-<form method="POST" action="">
-    {% csrf_token %}
-<div>
-    <form>
-        <label>Username:</label>
-        <input type="text" name="username" placeholder="Enter Username" />
+            <form method="POST" action="" class="login-form ">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="USERNAME" class="input-field"/>
+                <input type="password" name="password" placeholder="PASSWORD" class="input-field"/>
+                <button type="submit" class="login-page-button">LOGIN</button>
+            </form>
 
-        <label>Password:</label>
-        <input type="password" name="password" placeholder="Enter Password" />
+                <a href="{% url 'register' %}" class="login-page-button">CREATE NEW ACCOUNT</a>
+        </div>    
 
-        <input type="submit" value="Login" />
-    </form>
+        {% else %}
 
-    <p>havent signed up yet?</p>
-    <a href="{% url 'register' %}">Sign up</a>
-</div>
-{% else %}
+        <form method="POST" action="">
+            {% csrf_token %}
+            {{form.as_p}}
+            <input type="submit" value="Register"/>
 
-<div>
-    <form method="POST" action="">
-        {% csrf_token %}
-        {{form.as_p}}
-        <input type="submit" value="Register"/>
+            <p>Already signed up?</p>
+            <a href="{% url 'login' %}">Login</a>
+        </form>
 
-        <p>Already signed up?</p>
-        <a href="{% url 'login' %}">Login</a>
-    </form>
-</div>
+        {% endif %}
+        
+    </div>
+</body>
 
-
-
-{% endif %}
-
-{% endblock content %}
+</html>

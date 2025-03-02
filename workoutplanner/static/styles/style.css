@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+:root{
+    --bg-white: #F8F9FA;
+    --bg-red: #E36868;
+    --font-white: white;
+    --font-red: #DD0004;
+    --content-border: 2px solid var(--bg-red);
+    --default-border-radius: 5px;
+    
+}
+
+/*========== base styles ==========*/
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html{
+    font-size: 16px
+}
+
+h1{
+    font-family: "Fugaz One";
+}
+
+body{
+    background-color: var(--bg-white);
+    color: var(--font-red);
+    font-family: "Inria Sans";
+    min-height: 100vh;
+}
+
+
+
+/*========== components ==========*/
+
+.input-field{
+    width: 30rem;
+    padding: 1rem;
+    border: none;
+    border-radius: 15px;
+    text-align: center;
+    font-size: inherit;
+    outline: none;
+}
+
+
+/*========== login page ==========*/
+
+.login-body{
+    background-color: var(--bg-red);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    text-align: center;
+    padding-top: 2rem;
+}
+
+.login-app-title{
+    font-size: 10rem;
+    height: 12rem;
+    font-weight: normal;
+}
+
+
+.login-title-container{
+    border-bottom: 3px solid white;
+    height: 12rem;
+}
+.divider{
+    width: 45rem;
+    border: 0.20rem solid var(--font-white);
+}
+
+.login-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: inherit;
+}
+
+.form-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 8rem;
+    font-size: 1.5rem;
+}
+
+.login-page-button{
+    border: none;
+    color: var(--font-white);
+    background-color: Transparent;
+    cursor: pointer;
+    transition: 0.1s;
+    font-size: 1.2rem;
+}
+a.login-page-button{
+    text-decoration: none;
+}
+.login-page-button:hover{
+    font-weight: bold;
+}
+
+
+/*========== site layout ==========*/
+
+.main-body{
+    display: flex;
+} 
+
+.navbar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--bg-red);
+    width: 15rem;
+    flex-shrink: 0;
+} 
+
+/*========== library ==========*/
+.library{
+    display:flex;
+    flex: 1;
+    height: 100vh;
+    font-size: 2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 1rem;
+    gap: 1rem;
+    overflow: hidden;
+
+}
+
+.library-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+}
+
+.library-search{
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+}
+
+.exercise-name{
+    text-align: center;
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    width: 50%;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.exercise-content{
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    display: flex;
+    flex: 1;
+    align-self: stretch
+}
+
+.exercise-left-box{
+    border-right: var(--content-border);
+    display: flex;
+    flex-direction: column;
+    flex:5;
+}
+
+.exercise-description{
+    flex:5;
+}
+
+.exercise-video{
+    flex: 5;
+    border-bottom: var(--content-border);
+}
+
+.exercise-muscles{
+    flex:5;
+}
+
+
+.library-search{
+    display: flex;
+    flex-direction: column;
+}
+
+.exercise-search-box{
+    display: flex;
+    margin-top: 3rem;
+    margin-bottom: 0.5rem;
+    margin-left:0.25rem;
+    margin-right:0.25rem;
+    font-size: 1rem;
+    gap: 0.5rem;
+}
+
+.exercise-search-bar{
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    text-align: center;
+    flex: 9;
+}
+
+.exercise-categories{
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    text-align: center;
+    flex: 1;
+}
+
+.exercise-list{
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--font-red);
+    align-items: center;
+}
+
+.category-exercises{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    border-top:var(--content-border);
+    width: 95%;
+    margin-bottom: 1rem;
+}
+
+
+.exercise-item{
+    margin-top: 1rem;
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    height: auto;
+    overflow: hidden;
+}
+

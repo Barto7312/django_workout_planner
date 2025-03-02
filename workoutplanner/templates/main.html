@@ -1,27 +1,32 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'styles/style.css' %}">
+    <script src="{% static 'js/library.js' %}"></script>
     <title>Workout Planner</title>
 </head>
-<body>
+<body class="main-body">
 
     {% if not hide_nav %}
         {% include 'navbar.html' %}
     {% endif %}
 
-    {% if messages %}
+    <!-- {% if messages %}
     <ul class="messages">
         {% for message in messages %}
         <li>{{ message }}</li>
         {% endfor %}
     </ul>
-    {% endif %}
+    {% endif %} -->
+
 
     {% block content %}
 
     {% endblock %}
+
 
 </body>
 </html>

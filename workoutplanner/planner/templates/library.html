@@ -1,0 +1,54 @@
+{% extends 'main.html' %}
+{% block content%}
+<div class="library">
+
+    <div class="library-content">
+
+        <div class="exercise-name">
+            nazwa ex
+        </div>
+
+        <div class="exercise-content">
+
+            <div class="exercise-left-box">
+                <div class="exercise-video">Video</div>
+                <div class="exercise-muscles">Muscles</div>
+            </div>
+
+            <div class="exercise-description">
+                desc
+            </div>
+    
+        </div>
+    </div>
+
+    <div class="library-search">
+        <div class="exercise-search-box">
+            <div class="exercise-search-bar">search bar</div>
+            <div class="exercise-categories">categories</div>
+        </div>
+
+        <div class="exercise-list">
+
+            {% for category in categories %}
+                <div class="exercise-category">{{ category.name }}</div>
+
+                <div class="category-exercises">
+                    
+                    {% for exercise in category.category_exercises.all %}
+                        <div class="exercise-item"
+                            data-name="{{ exercise.name }}"
+                            data-video="{{ exercise.video }}"  
+                            data-muscles="{{ exercise.muscle_groups }}"  
+                            data-description="{{ exercise.description }}">
+                            <a href="#" class=exercise-link>{{ exercise.name }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
