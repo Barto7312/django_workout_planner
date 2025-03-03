@@ -1,22 +1,37 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Pobranie wszystkich ćwiczeń z listy
-    let exercises = document.querySelectorAll(".exercise-item");
+    // Add event listener to exercise links
+    const exerciseLinks = document.querySelectorAll('.exercise-link');
 
-    exercises.forEach(exercise => {
-        exercise.addEventListener("click", function(event) {
-            event.preventDefault(); // Zapobiega przewijaniu strony przy kliknięciu w <a>
+    exerciseLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default link behavior
 
-            // Pobranie danych z klikniętego ćwiczenia
-            let name = this.getAttribute("data-name");
-            let video = this.getAttribute("data-video");
-            let muscles = this.getAttribute("data-muscles");
-            let description = this.getAttribute("data-description");
+            // Get the exercise ID from the data attribute
+            const exerciseId = this.getAttribute('data-exercise-id');
 
-            // Aktualizacja treści w głównym oknie ćwiczenia
-            document.querySelector(".exercise-name").textContent = name;
-            document.querySelector(".exercise-video").textContent = video ? video : "Brak wideo";
-            document.querySelector(".exercise-muscles").textContent = muscles ? muscles : "Brak danych";
-            document.querySelector(".exercise-description").textContent = description ? description : "Brak opisu";
+            // Make an AJAX request to fetch exercise details
+            fetch(`/exercise/${exerciseId}/details/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Check if the response contains an error
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    // Update the exercise details on the page
+                    document.getElementById('exercise-name').textContent = data.name;
+                    document.getElementById('exercise-description').textContent = data.description;
+                    document.getElementById('exercise-muscles').textContent = data.muscles.join(', ');
+
+                    // Update exercise video (if available)
+                    if (data.video_url) {
+                        document.getElementById('exercise-video').innerHTML = `<video width="100%" controls><source src="${data.video_url}" type="video/mp4"></video>`;
+                    } else {
+                        document.getElementById('exercise-video').innerHTML = '<p>No video available.</p>';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
     });
 });
