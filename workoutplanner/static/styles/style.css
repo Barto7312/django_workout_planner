@@ -36,8 +36,6 @@ body{
     min-height: 100vh;
 }
 
-
-
 /*========== components ==========*/
 
 .input-field{
@@ -48,6 +46,29 @@ body{
     text-align: center;
     font-size: inherit;
     outline: none;
+}
+
+.search-box{
+    height:100%;
+    width: 100%;
+    display: block; 
+    caret-color: var(--font-red);
+    border: none;
+    border-radius: var(--default-border-radius);
+    color: var(--font-red);
+    padding: 0.25rem;
+    outline: none;
+    background-color: var(--bg-white);
+}
+
+input:focus {
+    outline:none;
+    border: none;
+}
+
+.dropdown{
+    background-color: var(--bg-red);
+    color:var(--bg-white);
 }
 
 
@@ -156,11 +177,11 @@ a.login-page-button{
     text-align: center;
     border: var(--content-border);
     border-radius: var(--default-border-radius);
-    width: 50%;
+    width: 40rem;
     margin-top: 1.5rem;
     margin-bottom: 1rem;
     overflow: hidden;
-    min-height: 3rem;
+    height: 3rem;
 }
 
 .exercise-content{
@@ -200,19 +221,18 @@ a.login-page-button{
 
 .exercise-search-box{
     display: flex;
-    margin-top: 3.5rem;
+    margin-top: 3.25rem;
     margin-bottom: 0.5rem;
     margin-left:0.25rem;
     margin-right:0.25rem;
     font-size: 1rem;
-    gap: 0.5rem;
+    gap: 0.5rem; 
 }
 
 .exercise-search-bar{
     border: var(--content-border);
     border-radius: var(--default-border-radius);
-    text-align: center;
-    flex: 9;
+    width: 10rem;
 }
 
 .exercise-categories{
@@ -234,36 +254,37 @@ a.login-page-button{
     align-items: center;
 }
 
-.category-exercises{
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    border-top:var(--content-border);
-    width: 95%;
-    margin-bottom: 1rem;
-}
-
-
-.exercise-item{
-    margin-top: 1rem;
-    border: var(--content-border);
-    border-radius: var(--default-border-radius);
-    height: auto;
-    overflow: hidden;
-    background-color: var(--bg-white);
-}
-
 .exercise-category{
     font-size: 1.5rem;
     font-weight: bold;
+    width: 95%;
+    text-align: center;
+}
+
+.category-exercises{
+    display: flex;
+    flex-direction: column;
+    border-top:var(--content-border);
+    gap: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.exercise-item{
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    height: 4rem;
+    overflow: hidden;
+    background-color: var(--bg-white);
 }
 
 a.exercise-link{
     text-decoration: none;
     color:var(--font-red);
-    display: block;    /* Makes <a> behave like a block (full width) */
-    width: 100%;       /* Full width of the parent <div> */
-    height: 100%;      /* Full height of the parent <div> */
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    height: 100%;
 }
 a.exercise-link:hover{
     background-color: var(--bg-red);
