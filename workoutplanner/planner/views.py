@@ -10,6 +10,9 @@ def main_menu(request):
 def workoutCreator(request):
     return render(request, 'workout_creator.html')
 
+def profilePage(request):
+    return render(request, 'profile_page.html')
+
 def statistics(request):
     return render(request, 'statistics.html')
 

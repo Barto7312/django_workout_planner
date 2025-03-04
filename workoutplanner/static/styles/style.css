@@ -91,7 +91,6 @@ input:focus {
     font-weight: normal;
 }
 
-
 .login-title-container{
     border-bottom: 3px solid white;
     height: 12rem;
@@ -136,7 +135,9 @@ a.login-page-button{
 
 .main-body{
     display: flex;
-} 
+}
+
+/*========== navbar ==========*/
 
 .navbar{
     display: flex;
@@ -145,7 +146,64 @@ a.login-page-button{
     background-color: var(--bg-red);
     width: 15rem;
     flex-shrink: 0;
+    padding: 1.5rem;;
 } 
+
+.navbar-logo{
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+}
+.navbar-logo hr{
+    color: var(--bg-white);
+    border: 0.1rem solid var(--font-white);
+}
+.navbar-logo h1{
+    color:var(--bg-white);
+    height: 4rem;
+}
+.navbar-logo a{
+    text-decoration: none;
+}
+
+.navbar-links{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.navbar-buttons{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 2rem;
+    text-align: center;
+    gap: 2rem;
+    padding-top: 4rem;
+}
+.navbar-buttons a{
+    text-decoration: none;
+    color: var(--bg-white);
+    width: 100%;
+    border-bottom: 2px solid transparent;
+}
+.navbar-buttons a:hover{
+    border-bottom: 2px solid var(--bg-white);
+}
+
+.logout-button{
+    margin-top: auto;
+}
+.logout-button a{
+    text-decoration: none;
+    color: var(--bg-white);
+    font-size: 1rem;
+}
+.logout-button a:hover{
+    font-weight:bold;
+}
+
 
 /*========== library ==========*/
 .library{

@@ -48,3 +48,10 @@
 
 </div>
 {% endblock %}
+
+{% load static %}
+
+{% block scripts %}
+    <!-- Link the specific script for the Library page -->
+    <script src="{% static 'js/library.js' %}"></script>
+{% endblock %}

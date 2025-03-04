@@ -1,4 +1,39 @@
 {% extends 'main.html' %}
-{% block content%}
-<h1>workout creator</h1>
+
+{% block content %}
+<div class="create-workout-container">
+    <h2>Create or Edit Workout Plan</h2>
+
+    <div class="workout-selection">
+        <button id="create-workout-btn">Create New Workout</button>
+        
+        <div class="existing-workouts">
+            <label for="existing-workouts-dropdown">Choose Workout to Edit:</label>
+            <select id="existing-workouts-dropdown">
+                <option value="">--Select--</option>
+                {% for workout in workouts %}
+                    <option value="{{ workout.id }}">{{ workout.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Workout Plan Details -->
+    <div id="workout-details-form" style="display:none;">
+        <form id="workout-form">
+            <input type="text" id="workout-name" name="name" placeholder="Workout Plan Name" required>
+            <textarea id="workout-description" name="description" placeholder="Workout Description"></textarea>
+            <input type="number" id="rest-days" name="restDays" placeholder="Rest Days" required>
+            <input type="date" id="start-date" name="startDate" required>
+            <button type="submit" id="save-workout-btn">Save Workout Plan</button>
+        </form>
+    </div>
+
+    <!-- Workout Days -->
+    <div id="workout-days" style="display:none;">
+        <button id="add-day-btn">Add New Day</button>
+        <div id="days-container"></div>
+    </div>
+</div>
+
 {% endblock %}

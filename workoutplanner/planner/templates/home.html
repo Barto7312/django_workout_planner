@@ -2,4 +2,7 @@
 
 {% block content %}
 <h1>Main Menu</h1>
+{% if request.user.is_authenticated %}
+<p>Hello {{request.user}}</p>
+{% endif %}
 {% endblock content %}
