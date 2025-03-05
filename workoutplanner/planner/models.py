@@ -41,7 +41,7 @@ class WorkoutDay(models.Model):
     description = models.TextField(blank=True, null=True)
     
     def __str__(self):
-        return f'{self.workout.name} - {self.name}'
+        return f'{self.workout_plan.name} - {self.name}'
 
     class Meta:
         ordering = ['day_order']  # To ensure the days are ordered correctly in the workout
@@ -55,4 +55,4 @@ class WorkoutExercise(models.Model):
     rest_seconds = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.exercise.name} - {self.sets} sets of {self.reps} reps with {self.rest} seconds of rest"
+        return f"{self.exercise.name} - {self.sets} sets of {self.reps} reps with {self.rest_seconds} seconds of rest"
