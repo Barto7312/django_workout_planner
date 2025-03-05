@@ -2,19 +2,19 @@
 
 {% block content %}
 <div class="exercise-creator-body">
+
     <div class="main-box">
+
         <div class="workouts-list">
-            <select id="workout-select" class="search-box" class="dropdown">
-                <!-- {% for workout in workouts %}
-                <option value="{{ workout.id }}">{{ workout.name }} dupa</option>
-                {% endfor %} -->
-            </select>
+            <select id="workout-select" class="search-box" class="dropdown"></select>
         </div>
-        <div class="main-window">
+
+        <div class="main-window" id="main-window">
 
 
 
         </div>
+
     </div>
 
     
@@ -23,17 +23,31 @@
 
 
     <div class="secondary-box">
-        <div class="workout-edit">
-            <div class="workout-name">
-                <input type="text" id="workout-name-edit" class="search-box" placeholder="Search exercise...">
-            </div>
-            <div class="days-between">day between</div>
-            <div class="start-date">start-date</div>
-            <div class="save-exercise">save exercise</div>
-            <div class="delete-exercise">delete</div>
 
+        <div class="workout-edit">
+            <div class="workout-details" id="workout-details-box">
+                <label>Name:</label>
+                <input id="workout-name" type="text">
+
+                <label>Rest Days:</label>
+                <input id="workout-rest-days" type="number">
+
+                <label>Start Date:</label>
+                <input id="workout-start-date" type="date">
+
+                <button id="save-workout">Save</button>
+                <button id="delete-workout">Delete</button>
+                <button class="create-workout">Create new workout</button>
+            </div>
         </div>
-        <div class="ai-box">ai</div>
+        
+
+
+
+
+
+        <div class="ai-box"></div>
+
     </div>
 
 

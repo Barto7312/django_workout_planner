@@ -399,6 +399,11 @@ a.exercise-link:hover{
     border: var(--content-border);
     height: 50%;
 }
+#workout-details-box{
+    display:none;
+}
+
+
 
 .ai-box{
     border: var(--content-border);
