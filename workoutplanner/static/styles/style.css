@@ -402,7 +402,12 @@ a.exercise-link:hover{
 #workout-details-box{
     display:none;
 }
-
+#workout-list-title{
+    /*  */
+}
+#workout-select{
+    display: none;
+}
 
 
 .ai-box{

@@ -5,14 +5,12 @@
 
     <div class="main-box">
 
-        <div class="workouts-list">
+        <div id="workout-list-box" class="workouts-list">
             <select id="workout-select" class="search-box" class="dropdown"></select>
+            <div id="workout-list-title"></div>
         </div>
 
         <div class="main-window" id="main-window">
-
-
-
         </div>
 
     </div>
@@ -35,9 +33,10 @@
                 <label>Start Date:</label>
                 <input id="workout-start-date" type="date">
 
-                <button id="save-workout">Save</button>
+                <button id="save-workout" data-mode="edit">Save</button>
                 <button id="delete-workout">Delete</button>
-                <button class="create-workout">Create new workout</button>
+                <button id="create-workout">Create new workout</button>
+                <button id="cancel-creation">Cancel<block>
             </div>
         </div>
         
