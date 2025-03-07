@@ -6,8 +6,8 @@
     <div class="main-box">
 
         <div id="workout-list-box" class="workouts-list">
-            <select id="workout-select" class="search-box" class="dropdown"></select>
-            <div id="workout-list-title"></div>
+            <select id="workout-select" class="search-box hide"></select>
+            <div id="workout-list-title" class="hide"></div>
         </div>
 
         <div class="main-window" id="main-window">
@@ -23,7 +23,7 @@
     <div class="secondary-box">
 
         <div class="workout-edit">
-            <div class="workout-details" id="workout-details-box">
+            <div class="workout-details hide" id="workout-details-box">
                 <label>Name:</label>
                 <input id="workout-name" type="text">
 
@@ -33,10 +33,10 @@
                 <label>Start Date:</label>
                 <input id="workout-start-date" type="date">
 
-                <button id="save-workout" data-mode="edit">Save</button>
-                <button id="delete-workout">Delete</button>
-                <button id="create-workout">Create new workout</button>
-                <button id="cancel-creation">Cancel<block>
+                <button id="save-workout" data-mode="">Save</button>
+                <button id="delete-workout" class="hide">Delete</button>
+                <button id="create-workout" class="hide">Create new workout</button>
+                <button id="cancel-creation" class="hide">Cancel<block>
             </div>
         </div>
         

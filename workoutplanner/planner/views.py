@@ -35,14 +35,11 @@ def library(request):
 
 # API
 
+#library
 def exercise_details(request, exercise_id):
     
-    try:
-        exercise = Exercise.objects.get(id=exercise_id)
-    except Exercise.DoesNotExist:
-        return JsonResponse({'error': 'Exercise not found'}, status=404)
+    exercise = get_object_or_404(Exercise, id=exercise_id)
 
-    
     exercise_data = {
         'name': exercise.name,
         'description': exercise.description,
@@ -51,17 +48,19 @@ def exercise_details(request, exercise_id):
     }
     return JsonResponse(exercise_data)
 
+
+#creator
 def get_workouts(request):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
     
     workouts = WorkoutPlan.objects.filter(owner=request.user)
-    workouts_data = list(workouts.values('id', 'name', 'restDays', 'startDate'))  # Serialize the data
+    workouts_data = list(workouts.values('id', 'name', 'restDays', 'startDate')) #values_list
     return JsonResponse(workouts_data, safe=False)
 
 @csrf_exempt
 def update_workout(request, workout_id):
-    """Update a workout's details."""
+
     workout = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
 
     if request.method == 'POST':
@@ -96,3 +95,11 @@ def create_workout(request):
             owner=request.user  # Assuming user authentication
         )
         return JsonResponse({"message": "Workout created successfully", "id": workout.id})
+
+@login_required
+def get_days(request, workout_id):
+
+    workout_plan = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
+    workout_days = workout_plan.days.all().values('id', 'name', 'day_order', 'description')
+
+    return JsonResponse(list(workout_days), safe=False)

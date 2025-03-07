@@ -384,8 +384,6 @@ a.exercise-link:hover{
 }
 
 
-
-
 .secondary-box{
     width: 20%;
     display: flex;
@@ -399,16 +397,6 @@ a.exercise-link:hover{
     border: var(--content-border);
     height: 50%;
 }
-#workout-details-box{
-    display:none;
-}
-#workout-list-title{
-    /*  */
-}
-#workout-select{
-    display: none;
-}
-
 
 .ai-box{
     border: var(--content-border);

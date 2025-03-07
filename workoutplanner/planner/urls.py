@@ -11,5 +11,6 @@ urlpatterns = [
     path('get_workouts/', views.get_workouts, name='get_workouts'),
     path('update_workout/<int:workout_id>/', views.update_workout, name='update_workout'),
     path('delete_workout/<int:workout_id>/', views.delete_workout, name='delete_workout'),
-    path('create-workout/', views.create_workout, name="create_workout"),
+    path('create_workout/', views.create_workout, name="create_workout"),
+    path('fetch_days/<int:workout_id>/', views.get_days, name="get_days"),
 ]
