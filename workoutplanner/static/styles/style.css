@@ -402,3 +402,20 @@ a.exercise-link:hover{
     border: var(--content-border);
     height: 50%;
 }
+
+
+
+
+.day-div{
+    display:flex;
+    flex-direction:column;
+}
+
+.day-exercise{
+    border: var(--content-border);
+}
+
+.day-content{
+    display: flex;
+    border: var(--content-border);
+}

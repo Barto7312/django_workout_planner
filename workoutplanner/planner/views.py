@@ -83,7 +83,6 @@ def delete_workout(request, workout_id):
         workout.delete()
         return JsonResponse({'message': 'Workout deleted successfully'})
 
-
 @csrf_exempt
 def create_workout(request):
     if request.method == "POST":
@@ -96,10 +95,43 @@ def create_workout(request):
         )
         return JsonResponse({"message": "Workout created successfully", "id": workout.id})
 
+
+
 @login_required
 def get_days(request, workout_id):
 
     workout_plan = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
-    workout_days = workout_plan.days.all().values('id', 'name', 'day_order', 'description')
+    workout_days = workout_plan.days.all().values('id', 'name', 'day_order')
 
     return JsonResponse(list(workout_days), safe=False)
+
+@csrf_exempt
+@login_required
+def delete_day(request, day_id):
+    if request.method == 'DELETE':
+        # Get the WorkoutDay object by day_id
+        workout_day = get_object_or_404(WorkoutDay, id=day_id)
+        
+        # Get the associated WorkoutPlan
+        workout_plan = workout_day.workout_plan
+        
+        # Check if the request's user is the owner of the workout plan
+        if workout_plan.owner != request.user:
+            return JsonResponse({"error": "You are not authorized to delete this day."}, status=403)
+        
+        # If the user is the owner, delete the day
+        workout_day.delete()
+        return JsonResponse({"message": "Day deleted successfully."})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+
+
+@login_required
+def get_exercises_for_day(request, day_id):
+    workout_day = get_object_or_404(WorkoutDay, id=day_id, workout_plan__owner=request.user)
+    exercises = workout_day.exercises.all().values(
+        "id", "exercise__name", "weight", "sets", "reps", "rest_seconds"
+    )
+    return JsonResponse(list(exercises), safe=False)

@@ -6,11 +6,17 @@ urlpatterns = [
     path('workout-creator', views.workoutCreator, name='workout-creator'),
     path('profile', views.profilePage, name='profile-page'),
     path('statistics', views.statistics, name='statistics'),
+
     path('excercise-list', views.library, name='library'),
     path('exercise/<int:exercise_id>/details/', views.exercise_details, name='exercise_details'),
+
     path('get_workouts/', views.get_workouts, name='get_workouts'),
     path('update_workout/<int:workout_id>/', views.update_workout, name='update_workout'),
     path('delete_workout/<int:workout_id>/', views.delete_workout, name='delete_workout'),
     path('create_workout/', views.create_workout, name="create_workout"),
+
     path('fetch_days/<int:workout_id>/', views.get_days, name="get_days"),
+    path('delete_day/<int:day_id>/', views.delete_day, name="delete_day"),
+
+    path('fetch_exercises/<int:day_id>/', views.get_exercises_for_day, name="get_exercises"),
 ]
