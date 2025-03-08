@@ -44,7 +44,7 @@ class WorkoutDay(models.Model):
         return f'{self.workout_plan.name} - {self.name}'
 
     class Meta:
-        ordering = ['day_order']  # To ensure the days are ordered correctly in the workout
+        ordering = ['day_order']  
 
 class WorkoutExercise(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
@@ -53,6 +53,10 @@ class WorkoutExercise(models.Model):
     sets = models.PositiveIntegerField()
     reps = models.PositiveIntegerField()
     rest_seconds = models.PositiveIntegerField()
+    exercise_order = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['exercise_order']  
 
     def __str__(self):
         return f"{self.exercise.name} - {self.sets} sets of {self.reps} reps with {self.rest_seconds} seconds of rest"

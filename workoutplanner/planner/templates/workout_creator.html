@@ -5,51 +5,84 @@
 
     <div class="main-box">
 
-        <div id="workout-list-box" class="workouts-list">
+        <div class="title-box" >
             <select id="workout-select" class="search-box hide"></select>
-            <div id="workout-list-title" class="hide"></div>
+            <div id="titleTextBox" class="hide"></div>
         </div>
 
-        <div class="main-window" id="main-window">
+        <div class="main-window" id="mainWindow">
         </div>
 
     </div>
 
-    
 
+    <div class="secondary-box hide" id="secondaryBox">
 
+        <div class="secondary-box-display">
 
-
-    <div class="secondary-box">
-
-        <div class="workout-edit">
-            <div class="workout-details hide" id="workout-details-box">
+            <div class="workout-details hide" id="workoutDetailsBox">
                 <label>Name:</label>
-                <input id="workout-name" type="text">
+                <input id="workoutName" type="text">
 
                 <label>Rest Days:</label>
-                <input id="workout-rest-days" type="number">
+                <input id="workoutRestDays" type="number">
 
                 <label>Start Date:</label>
-                <input id="workout-start-date" type="date">
+                <input id="workoutStartDate" type="date">
 
-                <button id="save-workout" data-mode="">Save</button>
-                <button id="delete-workout" class="hide">Delete</button>
-                <button id="create-workout" class="hide">Create new workout</button>
-                <button id="cancel-creation" class="hide">Cancel<block>
+                <button id="saveWorkout" data-mode="">Save</button>
+                <button id="deleteWorkout" class="hide">Delete</button>
+                <button id="createWorkout" class="hide">Create new workout</button>
+                <button id="cancelCreation" class="hide">Cancel<block>
             </div>
+
+            <div class="creator-library hide" id="exerciseListBox">
+                <div class="creator-exercise-search-box">
+                    <div class="exercise-search-bar">
+                        <input type="text" id="exercise-search-box" class="search-box" placeholder="Search exercise...">
+                    </div>
+                    <div class="exercise-categories">
+                        <select id="categoryFilter" class="search-box" class="dropdown">
+                            <option value="all">All</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="creator-exercise-list">
+                    {% for category in categories %}
+                        <div class="exercise-category" data-category-id="{{ category.id }}">
+                            {{ category.name }}
+                            <div class="category-exercises">
+                                {% for exercise in category.category_exercises.all %}
+                                    <div class="exercise-item">
+                                        <a href="#" class="exercise-link" data-exercise-id="{{ exercise.id }}">{{ exercise.name }}</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
         </div>
         
+        <div class="secondary-box-details">
+            <div class="library-window hide" id="libraryWindow">
+                <div class="exercise-content">
 
-
-
-
-
-        <div class="ai-box"></div>
+                    <div class="exercise-video" id="exerciseVideo"></div>
+                    <div class="exercise-description" id="exerciseDescription"></div>
+                    
+                </div>
+    
+            </div>
+        </div>
 
     </div>
-
-
 </div>
 {% endblock %}
 

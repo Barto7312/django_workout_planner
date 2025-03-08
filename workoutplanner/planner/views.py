@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 import json
 from django.http import HttpResponse
-from .models import Exercise, Category, WorkoutPlan, WorkoutDay
+from .models import Exercise, Category, WorkoutPlan, WorkoutDay, WorkoutExercise
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -13,7 +13,12 @@ def main_menu(request):
     return render(request, 'home.html')
 
 def workoutCreator(request):
-    return render(request, 'workout_creator.html')
+    categories = Category.objects.prefetch_related('category_exercises').all()  
+
+    context = {
+        'categories': categories
+    }
+    return render(request, 'workout_creator.html', context)
 
 def profilePage(request):
     return render(request, 'profile_page.html')
@@ -29,8 +34,6 @@ def library(request):
         'categories': categories
     }
     return render(request, 'library.html', context)
-
-
 
 
 # API
@@ -132,6 +135,33 @@ def delete_day(request, day_id):
 def get_exercises_for_day(request, day_id):
     workout_day = get_object_or_404(WorkoutDay, id=day_id, workout_plan__owner=request.user)
     exercises = workout_day.exercises.all().values(
-        "id", "exercise__name", "weight", "sets", "reps", "rest_seconds"
+        "id", "exercise__name", "weight", "sets", "reps", "rest_seconds", "exercise_order"
     )
     return JsonResponse(list(exercises), safe=False)
+
+def fetch_all_exercises(request):
+    exercises = Exercise.objects.all().values("id", "name")
+    return JsonResponse(list(exercises), safe=False)
+
+@csrf_exempt
+def add_exercise_to_day(request, day_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        try:
+            day = WorkoutDay.objects.get(id=day_id)
+            exercise = Exercise.objects.get(id=data["exercise_id"])
+
+            new_exercise = WorkoutExercise.objects.create(
+                exercise=exercise,
+                day=day,
+                weight=data["weight"],
+                sets=data["sets"],
+                reps=data["reps"],
+                rest_seconds=data["rest_seconds"],
+                exercise_order=WorkoutExercise.objects.filter(day=day).count() + 1
+            )
+
+            return JsonResponse({"success": True, "exercise_id": new_exercise.id})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+        
