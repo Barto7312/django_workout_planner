@@ -19,4 +19,5 @@ urlpatterns = [
     path('delete_day/<int:day_id>/', views.delete_day, name="delete_day"),
 
     path('fetch_exercises/<int:day_id>/', views.get_exercises_for_day, name="get_exercises"),
+    path('remove_exercise/<int:exercise_id>/', views.remove_exercise, name="remove_exercise"),
 ]

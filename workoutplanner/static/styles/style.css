@@ -290,7 +290,7 @@ a.login-page-button{
 .exercise-search-bar{
     border: var(--content-border);
     border-radius: var(--default-border-radius);
-    width: 10rem;
+    width: 70%;
 }
 
 .exercise-categories{
@@ -400,10 +400,12 @@ a.exercise-link:hover{
 .secondary-box-details{
     border: var(--content-border);
     height: 50%;
+    overflow: hidden;
 }
 
 
 
+/* days */
 
 .day-div{
     display:flex;
@@ -424,11 +426,9 @@ a.exercise-link:hover{
     display:flex;
     border: var(--content-border);
 }
-.exercise-details-box{
-    display: flex;
-}
 
-/* creator library */
+
+/*  exercise list */
 .creator-exercise-list-class{
     display:flex;
     flex-direction: column;
@@ -454,4 +454,21 @@ a.exercise-link:hover{
     align-items: center;
     overflow-y: auto;
     height: 100%;
+}
+
+/* exercise details windows */
+.library-window{
+    height: 100%;
+    display:flex;
+    flex-direction: column;
+}
+
+.creator-exercise-content{
+    display: flex;
+    overflow: hidden;
+}
+
+.day-creator-buttons{
+    border: var(--content-border);
+    height: 10%;
 }

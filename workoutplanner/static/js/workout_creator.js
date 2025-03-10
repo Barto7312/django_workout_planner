@@ -105,6 +105,7 @@ function loadWorkoutDetails(workoutId) {
         .catch(error => console.error("Error loading workout details:", error));
 }
 
+//Show form to create new workout
 function showWorkoutForm() {
 
     flushUI();
@@ -176,6 +177,17 @@ function deleteWorkout() {
     .catch(error => console.error("Error deleting workout:", error));
 }
 
+
+
+
+
+
+
+
+
+/*========== Days ==========*/
+
+//Display all days
 function fetchWorkoutDays(workoutId) {
     fetch(`/fetch_days/${workoutId}/`)
         .then(response => response.json())
@@ -207,6 +219,7 @@ function fetchWorkoutDays(workoutId) {
                 //create day's content div
                 const dayContent = document.createElement("div");
                 dayContent.classList.add("day-content");
+                dayContent.id = `day${day.day_order}`;
                 dayDiv.appendChild(dayContent);
                 
                 //create day order div
@@ -260,24 +273,7 @@ function fetchWorkoutDays(workoutId) {
             console.error("Error fetching workout days:", error);
         });
 }
-
-function deleteDay(dayId, workoutId) {
-    if (!confirm("Are you sure you want to delete this day?")) return;
-
-    fetch(`/delete_day/${dayId}/`, {
-        method: "DELETE",
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        fetchWorkoutDays(workoutId);
-    })
-    .catch(error => console.error("Error deleting day:", error));
-}
-
-
-/*========== Days ==========*/
-
+//Populate exercises in days
 function fetchDayExercises(dayId, exercisesBox) {
     fetch(`/fetch_exercises/${dayId}/`)
     .then(response => response.json())
@@ -322,10 +318,30 @@ function fetchDayExercises(dayId, exercisesBox) {
     .catch(error => console.error("Fetch error:", error));
 }
 
+//deleteDay
+function deleteDay(dayId, workoutId) {
+    if (!confirm("Are you sure you want to delete this day?")) return;
+
+    fetch(`/delete_day/${dayId}/`, {
+        method: "DELETE",
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        fetchWorkoutDays(workoutId);
+    })
+    .catch(error => console.error("Error deleting day:", error));
+}
+
+
+
+
+/*========== Exercises ==========*/
+
 function displayDay(dayId, dayOrder){
 
     flushUI();
-
+    mainBox.innerHTML = "";
     titleTextBox.style.display = "block";
     titleTextBox.textContent=`Day: ${dayOrder}`;
 
@@ -333,7 +349,13 @@ function displayDay(dayId, dayOrder){
     exerciseListBox.style.display = "flex";
 
     loadExerciseList();
+    loadExercises(dayId);
 
+}
+
+
+function loadExercises(dayId){
+    
     fetch(`/fetch_exercises/${dayId}/`)
     .then(response => response.json())
     .then(data => {
@@ -352,11 +374,15 @@ function displayDay(dayId, dayOrder){
             const removeBtnDiv = document.createElement("div");
             exerciseDiv.appendChild(removeBtnDiv);
 
-            //create button     
+            //create remove button     
             let removeBtn = document.createElement("button");
             removeBtn.id = `remove-day-${exercise.id}`;
             removeBtn.textContent = "Remove";
             removeBtnDiv.appendChild(removeBtn);
+
+            removeBtn.addEventListener("click", () => {
+                removeExercise(exercise.id, dayId)
+            });
     
             //create divs for every exercise detail
             const orderDiv = document.createElement("div");
@@ -415,9 +441,25 @@ function displayDay(dayId, dayOrder){
     });
 }
 
+function removeExercise(exerciseId, dayId){
+    if (!confirm("Are you sure you want to delete this exercise?")) return;
+
+    fetch(`/remove_exercise/${exerciseId}/`, {
+        method: "DELETE",
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        loadExercises(dayId);
+    })
+    .catch(error => console.error("Error deleting exercise:", error));
+}
+
+
+
 function loadExerciseList(){
 
-    filterExercises();
+    // filterExercises();
     libraryWindow.style.display = "flex";
 
     const exerciseLinks = document.querySelectorAll('.exercise-link');
@@ -427,6 +469,7 @@ function loadExerciseList(){
             e.preventDefault(); 
 
             const exerciseId = this.getAttribute('data-exercise-id');
+            const addExerciseButton = document.getElementById("addExercise");
 
             fetch(`/exercise/${exerciseId}/details/`)
                 .then(response => response.json())
@@ -436,6 +479,9 @@ function loadExerciseList(){
                         alert(data.error);
                         return;
                     }
+
+                    addExerciseButton.addEventListener('click', addExercise(exerciseId));
+
                     document.getElementById('exerciseDescription').textContent = data.description;
 
                     if (data.video_url) {
@@ -450,94 +496,44 @@ function loadExerciseList(){
 
 }
 
-function filterExercises() {
-    searchBox.addEventListener("input", filterExercises);
-    const searchText = searchBox.value.toLowerCase();
-
-    exerciseCategories.forEach((category) => {
-        let hasVisibleExercise = false;
-        const exercises = category.querySelectorAll(".exercise-item");
-
-        exercises.forEach((exercise) => {
-            const exerciseName = exercise.textContent.toLowerCase();
-
-            if (exerciseName.includes(searchText)) {
-                exercise.style.display = "block";
-                hasVisibleExercise = true;
-            } else {
-                exercise.style.display = "none";
-            }
-        });
-
-        if (hasVisibleExercise) {
-            category.style.display = "block";
-        } else {
-            category.style.display = "none";
-        }
-    });
-
-    categoryFilter.addEventListener("change", function () {
-        const selectedCategory = categoryFilter.value; 
-
-        exerciseCategories.forEach((item) => {
-            const exerciseCategory = item.getAttribute("data-category-id");
-
-            if (selectedCategory === "all" || exerciseCategory === selectedCategory) {
-                item.style.display = "block";
-            } else {
-                item.style.display = "none";
-            }
-        });
-    });
-}
+// function filterExercises() {
+//     searchBox.addEventListener("input", filterExercises);
+//     const searchText = searchBox.value.toLowerCase();
 
 
+//     exerciseCategories.forEach((category) => {
+//         let hasVisibleExercise = false;
+//         const exercises = category.querySelectorAll(".exercise-item");
 
-// function fetchAllExercises() {
-//     fetch("/fetch_all_exercises/") // Endpoint to get all exercises
-//         .then(response => response.json())
-//         .then(data => {
-//             exerciseListBox.innerHTML = ""; // Clear previous content
+//         exercises.forEach((exercise) => {
+//             const exerciseName = exercise.textContent.toLowerCase();
 
-//             data.forEach(exercise => {
-//                 const exerciseDiv = document.createElement("div");
-//                 exerciseDiv.classList.add("selectable-exercise");
-//                 exerciseDiv.textContent = exercise.name;
+//             if (exerciseName.includes(searchText)) {
+//                 exercise.style.display = "block";
+//                 hasVisibleExercise = true;
+//             } else {
+//                 exercise.style.display = "none";
+//             }
+//         });
 
-//                 exerciseDiv.addEventListener("click", () => addExerciseToDay(exercise));
-
-//                 exerciseListBox.appendChild(exerciseDiv);
-//             });
-
-//             document.getElementById("exercise-modal").style.display = "block"; // Show modal
-//         })
-//         .catch(error => console.error("Error fetching exercises:", error));
-// }
-
-// function addExerciseToDay(exercise) {
-//     const dayId = currentlyEditingDayId; // This should be set when editing starts
-
-//     fetch(`/add_exercise_to_day/${dayId}/`, {
-//         method: "POST",
-//         headers: {
-//             "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({
-//             exercise_id: exercise.id,
-//             sets: 3,  // Default values (user can change later)
-//             reps: 10,
-//             weight: 0,
-//             rest_seconds: 60,
-//         }),
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.success) {
-//             displayDay(dayId, currentlyEditingDayOrder); // Refresh UI
-//             document.getElementById("exercise-modal").style.display = "none"; // Close modal
+//         if (hasVisibleExercise) {
+//             category.style.display = "block";
 //         } else {
-//             console.error("Error adding exercise:", data.error);
+//             category.style.display = "none";
 //         }
-//     })
-//     .catch(error => console.error("Fetch error:", error));
+//     });
+
+//     categoryFilter.addEventListener("change", function () {
+//         const selectedCategory = categoryFilter.value; 
+
+//         exerciseCategories.forEach((item) => {
+//             const exerciseCategory = item.getAttribute("data-category-id");
+
+//             if (selectedCategory === "all" || exerciseCategory === selectedCategory) {
+//                 item.style.display = "block";
+//             } else {
+//                 item.style.display = "none";
+//             }
+//         });
+//     });
 // }

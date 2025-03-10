@@ -165,3 +165,22 @@ def add_exercise_to_day(request, day_id):
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
         
+@csrf_exempt
+@login_required
+def remove_exercise(request, exercise_id):
+    if request.method == 'DELETE':
+        # Get the WorkoutDay object by day_id
+        exercise = get_object_or_404(WorkoutExercise, id=exercise_id)
+        
+        # Get the associated WorkoutPlan
+        workout_plan = exercise.day.workout_plan 
+        
+        # Check if the request's user is the owner of the workout plan
+        if workout_plan.owner != request.user:
+            return JsonResponse({"error": "You are not authorized to delete this day."}, status=403)
+        
+        # If the user is the owner, delete the day
+        exercise.delete()
+        return JsonResponse({"message": "Exercise deleted successfully."})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
