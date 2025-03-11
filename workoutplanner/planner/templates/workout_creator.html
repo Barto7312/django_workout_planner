@@ -58,7 +58,7 @@
                             <div class="category-exercises">
                                 {% for exercise in category.category_exercises.all %}
                                     <div class="exercise-item">
-                                        <a href="#" class="exercise-link" data-exercise-id="{{ exercise.id }}">{{ exercise.name }}</a>
+                                        <a href="#" class="exercise-link" id="addExercise" data-exercise-id="{{ exercise.id }}">{{ exercise.name }}</a>
                                     </div>
                                 {% endfor %}
                             </div>

@@ -33,18 +33,32 @@ class WorkoutPlan(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class WorkoutDay(models.Model):
     workout_plan = models.ForeignKey(WorkoutPlan, related_name='days', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)  # e.g., "Day 1", "Day 2"
-    day_order = models.PositiveIntegerField()  # To sort days if needed (e.g., 1 for Day 1, 2 for Day 2)
-    description = models.TextField(blank=True, null=True)
-    
+    day_order = models.PositiveIntegerField()  
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:  
+            last_day = WorkoutDay.objects.filter(workout_plan=self.workout_plan).order_by('-day_order').first()
+            self.day_order = (last_day.day_order + 1) if last_day else 1  
+
+        super().save(*args, **kwargs) 
+
+    def delete(self, *args, **kwargs):
+        current_order = self.day_order  
+        super().delete(*args, **kwargs) 
+
+        WorkoutDay.objects.filter(
+            workout_plan=self.workout_plan,
+            day_order__gt=current_order
+        ).update(day_order=models.F('day_order') - 1)
+
     def __str__(self):
-        return f'{self.workout_plan.name} - {self.name}'
+        return f'{self.workout_plan.name} - (Day {self.day_order})'
 
     class Meta:
-        ordering = ['day_order']  
+        ordering = ['day_order']
 
 class WorkoutExercise(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
@@ -57,6 +71,22 @@ class WorkoutExercise(models.Model):
 
     class Meta:
         ordering = ['exercise_order']  
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:  
+            last_exercise = WorkoutExercise.objects.filter(day=self.day).order_by('-exercise_order').first()
+            self.exercise_order = (last_exercise.exercise_order + 1) if last_exercise else 1  
+        super().save(*args, **kwargs)  
+
+    def delete(self, *args, **kwargs):
+        current_order = self.exercise_order  #
+        super().delete(*args, **kwargs)  
+
+        
+        WorkoutExercise.objects.filter(
+            day=self.day,
+            exercise_order__gt=current_order
+        ).update(exercise_order=models.F('exercise_order') - 1)
 
     def __str__(self):
         return f"{self.exercise.name} - {self.sets} sets of {self.reps} reps with {self.rest_seconds} seconds of rest"
