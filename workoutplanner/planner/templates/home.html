@@ -6,3 +6,9 @@
 <p>Hello {{request.user}}</p>
 {% endif %}
 {% endblock content %}
+
+{% load static %}
+
+{% block scripts %}
+    <script src="{% static 'js/home.js' %}"></script>
+{% endblock %}

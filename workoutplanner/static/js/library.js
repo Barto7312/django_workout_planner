@@ -1,5 +1,29 @@
 document.addEventListener("DOMContentLoaded", function() {
 
+    //load first exercise on the list
+    fetch(`/exercise/1/details/`)
+    .then(response => response.json())
+    .then(data => {
+        
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        document.getElementById('exercise-name').textContent = data.name;
+        document.getElementById('exercise-description').textContent = data.description;
+        document.getElementById('exercise-muscles').textContent = data.muscles.join(', ');
+
+        if (data.video_url) {
+            document.getElementById('exercise-video').innerHTML = `<video width="100%" controls><source src="${data.video_url}" type="video/mp4"></video>`;
+        } else {
+            document.getElementById('exercise-video').innerHTML = '<p>No video available.</p>';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+
+
+    
     //Displaying exercise info
     const exerciseLinks = document.querySelectorAll('.exercise-link');
 

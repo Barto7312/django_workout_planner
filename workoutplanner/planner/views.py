@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 import json
 from django.http import HttpResponse
 from .models import Exercise, Category, WorkoutPlan, WorkoutDay, WorkoutExercise
@@ -9,24 +9,31 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
+
 def main_menu(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
     return render(request, 'home.html')
 
+#pages
 def workoutCreator(request):
-    categories = Category.objects.prefetch_related('category_exercises').all()  
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+       
+    categories = Category.objects.prefetch_related('category_exercises').all() 
 
     context = {
         'categories': categories
     }
     return render(request, 'workout_creator.html', context)
 
-def profilePage(request):
-    return render(request, 'profile_page.html')
-
-def statistics(request):
-    return render(request, 'statistics.html')
 
 def library(request):
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     categories = Category.objects.prefetch_related('category_exercises').all()  
 
     context = {
@@ -37,9 +44,8 @@ def library(request):
 
 # API
 
-
-
 #library
+@login_required
 def exercise_details(request, exercise_id):
     
     exercise = get_object_or_404(Exercise, id=exercise_id)
@@ -53,21 +59,17 @@ def exercise_details(request, exercise_id):
     return JsonResponse(exercise_data)
 
 
-
-
-
 #creator
 
 #workouts
+@login_required
 def get_workouts(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'User not authenticated'}, status=401)
-    
     workouts = WorkoutPlan.objects.filter(owner=request.user)
     workouts_data = list(workouts.values('id', 'name', 'restDays', 'startDate')) #values_list
     return JsonResponse(workouts_data, safe=False)
 
 @csrf_exempt
+@login_required
 def update_workout(request, workout_id):
 
     workout = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
@@ -84,6 +86,7 @@ def update_workout(request, workout_id):
             return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
+@login_required
 def delete_workout(request, workout_id):
     """Delete a workout."""
     workout = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
@@ -93,6 +96,7 @@ def delete_workout(request, workout_id):
         return JsonResponse({'message': 'Workout deleted successfully'})
 
 @csrf_exempt
+@login_required
 def create_workout(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -116,6 +120,7 @@ def get_days(request, workout_id):
     return JsonResponse(list(workout_days), safe=False)
 
 @csrf_exempt
+@login_required
 def create_day(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -129,17 +134,13 @@ def create_day(request):
 @login_required
 def delete_day(request, day_id):
     if request.method == 'DELETE':
-        # Get the WorkoutDay object by day_id
         workout_day = get_object_or_404(WorkoutDay, id=day_id)
         
-        # Get the associated WorkoutPlan
         workout_plan = workout_day.workout_plan
         
-        # Check if the request's user is the owner of the workout plan
         if workout_plan.owner != request.user:
             return JsonResponse({"error": "You are not authorized to delete this day."}, status=403)
         
-        # If the user is the owner, delete the day
         workout_day.delete()
         return JsonResponse({"message": "Day deleted successfully."})
 
@@ -164,18 +165,15 @@ def update_exercises_for_day(request, day_id):
             data = json.loads(request.body)
             workout_day = get_object_or_404(WorkoutDay, id=day_id, workout_plan__owner=request.user)
 
-            # 1. Delete removed exercises
             existing_exercise_ids = [exercise["id"] for exercise in data if "id" in exercise]
             WorkoutExercise.objects.filter(day=workout_day).exclude(id__in=existing_exercise_ids).delete()
 
-            # 2. Add/update exercises
             for exercise_data in data:
-                if "id" in exercise_data:  # Existing exercise (update)
+                if "id" in exercise_data:
                     exercise = get_object_or_404(WorkoutExercise, id=exercise_data["id"], day=workout_day)
-                else:  # New exercise (create)
+                else: 
                     exercise = WorkoutExercise(day=workout_day)
 
-                # Assign values
                 exercise.exercise = get_object_or_404(Exercise, id=exercise_data["exercise"])
                 exercise.weight = exercise_data["weight"]
                 exercise.sets = exercise_data["sets"]
@@ -224,17 +222,13 @@ def add_exercise_to_day(request, day_id):
 @login_required
 def remove_exercise(request, exercise_id):
     if request.method == 'DELETE':
-        # Get the WorkoutDay object by day_id
         exercise = get_object_or_404(WorkoutExercise, id=exercise_id)
         
-        # Get the associated WorkoutPlan
         workout_plan = exercise.day.workout_plan 
         
-        # Check if the request's user is the owner of the workout plan
         if workout_plan.owner != request.user:
             return JsonResponse({"error": "You are not authorized to delete this day."}, status=403)
         
-        # If the user is the owner, delete the day
         exercise.delete()
         return JsonResponse({"message": "Exercise deleted successfully."})
 

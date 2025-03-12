@@ -248,26 +248,22 @@ function fetchWorkoutDays(workoutId) {
                 dayDiv.appendChild(buttonsDiv);
 
                 //create delete button
-                const deleteButtonDiv = document.createElement("div");
                 const deleteButton = document.createElement("button");
                 deleteButton.textContent = "Delete";
                 deleteButton.id = `delete-button-${day.id}`;
-                deleteButtonDiv.appendChild(deleteButton);
 
                 deleteButton.onclick = () => deleteDay(day.id, workoutId); 
                 
-                buttonsDiv.appendChild(deleteButtonDiv);
+                buttonsDiv.appendChild(deleteButton);
 
                 //create edit button
-                const editButtonDiv = document.createElement("div");
                 const editButton = document.createElement("button");
                 editButton.textContent = "Edit";
                 editButton.id = `edit-button-${day.id}`;
-                editButtonDiv.appendChild(editButton);
 
                 editButton.onclick = () => displayDay(day, workoutId); 
 
-                buttonsDiv.appendChild(editButtonDiv);
+                buttonsDiv.appendChild(editButton);
             });
 
             const createDayButton = document.createElement("button");
@@ -427,6 +423,7 @@ function renderExercises() {
         exerciseDiv.appendChild(exerciseDetails);
 
         const removeBtnDiv = document.createElement("div");
+        removeBtnDiv.classList.add("exercise-details-remove-btns");
         exerciseDiv.appendChild(removeBtnDiv);
 
         let removeBtn = document.createElement("button");
@@ -436,33 +433,65 @@ function renderExercises() {
         removeBtn.onclick = () => removeExercise(index);
 
         const orderDiv = document.createElement("div");
+        orderDiv.classList.add("exercise-details-order");
         orderDiv.textContent = order;
 
         const nameDiv = document.createElement("div");
+        nameDiv.classList.add("name-div")
         nameDiv.textContent = exercise.name;
 
+        const weightDiv = document.createElement("div");
+        weightDiv.classList.add("exercise-content-div")
         const weightInput = document.createElement("input");
+        let exLabel = document.createElement("label");
+        exLabel.textContent = "Weight (KG)";
+        weightDiv.appendChild(exLabel);
+        weightDiv.appendChild(weightInput);
+        weightInput.classList.add("exercise-weight-input");
         weightInput.value = exercise.weight;
         weightInput.addEventListener("input", () => updateExercise(index, "weight", weightInput.value));
+        weightDiv.appendChild(exLabel);
+        weightDiv.appendChild(weightInput);
 
+        const setsDiv = document.createElement("div");
+        setsDiv.classList.add("exercise-content-div");
         const setsInput = document.createElement("input");
+        exLabel = document.createElement("label");
+        exLabel.textContent = "Sets";
+        setsInput.classList.add("exercise-sets-input");
         setsInput.value = exercise.sets;
         setsInput.addEventListener("input", () => updateExercise(index, "sets", setsInput.value));
+        setsDiv.appendChild(exLabel);
+        setsDiv.appendChild(setsInput);
 
+        const repsDiv = document.createElement("div");
+        repsDiv.classList.add("exercise-content-div");
+        exLabel = document.createElement("label");
+        exLabel.textContent = "Reps";
         const repsInput = document.createElement("input");
+        repsInput.classList.add("exercise-reps-input");
         repsInput.value = exercise.reps;
         repsInput.addEventListener("input", () => updateExercise(index, "reps", repsInput.value));
+        repsDiv.appendChild(exLabel);
+        repsDiv.appendChild(repsInput);
 
+        const restDiv = document.createElement("div")
+        restDiv.classList.add("exercise-content-div");;
+        exLabel = document.createElement("label");
+        exLabel.textContent = "Rest (sec)";
         const restInput = document.createElement("input");
+        restInput.classList.add("exercise-rest-input");
         restInput.value = exercise.rest_seconds;
         restInput.addEventListener("input", () => updateExercise(index, "rest_seconds", restInput.value));
+        restDiv.appendChild(exLabel);
+        restDiv.appendChild(restInput);
 
         exerciseDetails.appendChild(orderDiv);
         exerciseDetails.appendChild(nameDiv);
-        exerciseDetails.appendChild(weightInput);
-        exerciseDetails.appendChild(setsInput);
-        exerciseDetails.appendChild(repsInput);
-        exerciseDetails.appendChild(restInput);
+        exerciseDetails.appendChild(weightDiv);
+        exerciseDetails.appendChild(setsDiv);
+        exerciseDetails.appendChild(repsDiv);
+        exerciseDetails.appendChild(restDiv);
 
         order++;
     });
