@@ -21,19 +21,22 @@
         <div class="secondary-box-display">
 
             <div class="workout-details hide" id="workoutDetailsBox">
-                <label>Name:</label>
-                <input id="workoutName" type="text">
+                <div class="workout-inputs">
+                    <label>Name</label>
+                    <input id="workoutName" type="text">
 
-                <label>Rest Days:</label>
-                <input id="workoutRestDays" type="number">
+                    <label>Rest Days</label>
+                    <input id="workoutRestDays" type="number">
 
-                <label>Start Date:</label>
-                <input id="workoutStartDate" type="date">
-
-                <button id="saveWorkout" data-mode="">Save</button>
-                <button id="deleteWorkout" class="hide">Delete</button>
-                <button id="createWorkout" class="hide">Create new workout</button>
-                <button id="cancelCreation" class="hide">Cancel<block>
+                    <label>Start Date</label>
+                    <input id="workoutStartDate" type="date">
+                </div>
+                <div class = "workout-buttons">
+                    <button id="saveWorkout" data-mode="">Save</button>
+                    <button id="deleteWorkout" class="hide">Delete</button>
+                    <button id="createWorkout" class="hide">Create new workout</button>
+                    <button id="cancelCreation" class="hide">Cancel<block>
+                </div>
             </div>
 
             <div class="creator-library hide" id="exerciseListBox">

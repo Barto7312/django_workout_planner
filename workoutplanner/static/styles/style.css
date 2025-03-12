@@ -7,7 +7,8 @@
     --font-white: white;
     --font-red: #DD0004;
     --content-border: 2px solid var(--bg-red);
-    --default-border-radius: 5px;
+    --content-border-bold: 4px solid var(--bg-red);
+    --default-border-radius: 8px;
     --bg-blue: #4A90E2;
     --font-dark: #212529;
     
@@ -34,6 +35,21 @@ body{
     color: var(--font-red);
     font-family: "Inria Sans";
     min-height: 100vh;
+}
+
+button{
+    background: none;
+    border: none; 
+    color: inherit;
+    font: inherit; 
+    padding: 0; 
+    cursor: pointer; 
+}
+
+button:hover{
+    background-color: var(--bg-red);
+    color: var(--bg-white);
+    border-radius: var(--default-border-radius);
 }
 
 /*========== components ==========*/
@@ -365,22 +381,34 @@ a.exercise-link:hover{
 }
 
 .main-box{
-    width: 70%;
+    width: 95%;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
 .title-box{
-    border: var(--content-border);
+    border: var(--content-border-bold);
+    border-radius: var(--default-border-radius);
     height: 5%;
     width: 50%;
 }
+.title-box select{
+    font-size: 1.5rem;
+    text-align: center;
+}
+.title-box div{
+    text-align: center;
+}
 
 .main-window{
-    border: var(--content-border);
+    border: var(--content-border-bold);
+    border-radius: var(--default-border-radius);
     height: 95%;
     overflow-y: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .secondary-box{
@@ -392,24 +420,75 @@ a.exercise-link:hover{
 }
 
 .secondary-box-display{
-    border: var(--content-border);
-    height: 50%;
-    overflow: hidden;
+    border: var(--content-border-bold);
+    border-radius: var(--default-border-radius);
+    height: 70%;
+    overflow: auto;
 }
 
 .secondary-box-details{
-    border: var(--content-border);
-    height: 50%;
-    overflow: hidden;
+    border: var(--content-border-bold);
+    border-radius: var(--default-border-radius);
+    height: 30%;
+    overflow: auto;
 }
 
+.workout-details{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 1rem;
+}
+.workout-details input{
+    border: none;
+    text-align: center;
+    
+    background: white;
+    border: none; 
+    color: grey;
+    font: inherit;
+    padding: 0; 
+}
+
+.workout-inputs{
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    
+}
+
+.workout-buttons{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin:
+
+}
+.workout-buttons button{
+    border: var(--content-border);
+    margin: 0.5rem;
+    border-radius: var(--default-border-radius);
+}
+
+#createFirstWorkout{
+    font-size: 3rem;
+    margin: auto;
+    font-weight: bold;
+}
+#createFirstWorkout:hover{
+    font-size: 3.5rem;
+
+}
 
 
 /* days */
 
-.day-div{
-    display:flex;
-    flex-direction:column;
+.workout-day{
+    display: flex;
+    padding: 0.5rem;
+    width: 100%;
+    min-height: 20%;
 }
 
 .day-exercise{
@@ -419,6 +498,51 @@ a.exercise-link:hover{
 .day-content{
     display: flex;
     border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    padding: 0.5rem;
+    flex: 1;
+    overflow-x: auto;
+    justify-content: start;
+    align-items: center;
+    gap: 1rem;
+}
+
+.day-number{
+    border: var(--content-border);
+    border-radius: 75px;
+    width: 2.7rem;
+
+}
+
+.workout-exercise{
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    border-left: var(--content-border);
+    padding-left: 1rem;
+    width: 10%;
+    height: 100%;
+    overflow: hidden;
+    flex: 1;
+}
+
+.workout-exercise-reps-sets{
+    font-size: 1.5rem;
+}
+
+.workout-exercise-weight-rest{
+    display: flex;
+    justify-content: center;
+    font-size: 1rem;
+    gap: 1rem;
+}
+
+.day-buttons{
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    width: 10%;
+    gap: 1rem;
 }
 
 .day-exercise-box{
@@ -472,3 +596,4 @@ a.exercise-link:hover{
     border: var(--content-border);
     height: 10%;
 }
+
