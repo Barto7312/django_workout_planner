@@ -70,6 +70,21 @@ def get_workouts(request):
 
 @csrf_exempt
 @login_required
+def update_workout_time(request, workout_id):
+    workout = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            workout.startDate = data.get('startDate', workout.startDate)
+            workout.currentDay = data.get('currentDay', workout.currentDay)
+            workout.save()
+            return JsonResponse({'message': 'Workout updated successfully'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)        
+
+@csrf_exempt
+@login_required
 def update_workout(request, workout_id):
 
     workout = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
@@ -287,7 +302,7 @@ def get_workout(request, workout_id):
         'workout_plan': {
             'id': workout_plan.id,
             'name': workout_plan.name,
-            'start_date': workout_plan.startDate,
+            'startDate': workout_plan.startDate.strftime('%Y-%m-%d'),
             'rest_days': workout_plan.restDays,
             'current_day': current_day.day_order
         },

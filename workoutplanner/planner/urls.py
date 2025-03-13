@@ -23,4 +23,6 @@ urlpatterns = [
     path('update_exercises/<int:day_id>/', views.update_exercises, name='update_exercises'),
 
     path('get_workout/<int:workout_id>/', views.get_workout, name="get_workout"),
+    path('update_workout_time/<int:workout_id>/', views.update_workout_time, name="update_workout_time"),
+
 ]
