@@ -21,4 +21,6 @@ urlpatterns = [
 
     path('remove_exercise/<int:exercise_id>/', views.remove_exercise, name="remove_exercise"),
     path('update_exercises/<int:day_id>/', views.update_exercises, name='update_exercises'),
+
+    path('get_workout/<int:workout_id>/', views.get_workout, name="get_workout"),
 ]

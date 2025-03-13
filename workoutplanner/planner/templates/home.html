@@ -1,10 +1,37 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>Main Menu</h1>
-{% if request.user.is_authenticated %}
-<p>Hello {{request.user}}</p>
-{% endif %}
+<div class="main-menu">
+    <div class="workout-div">
+        <div class="user-box">
+            {% if request.user.is_authenticated %}
+            <p>Hello, {{request.user}}</p>
+            {% endif %}
+        </div>
+        <div class="workout-box">
+            <div id="workoutTitle" class="workout-title"></div>
+            <div id="exercisesBox" class="exercises"></div>
+        </div>
+    </div>
+    <div class="info-div">
+        <div class="buttons-box">
+            <button>Start workout</button>
+            <button>Postopne workout</button>
+            <button>Skip workout</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 {% endblock content %}
 
 {% load static %}

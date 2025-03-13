@@ -262,3 +262,35 @@ def update_exercises(request, day_id):
                 )
 
         return JsonResponse({"success": True, "day_order": day.day_order})
+    
+#home
+@login_required
+def get_workout(request, workout_id):
+    
+    workout_plan = get_object_or_404(WorkoutPlan, id=workout_id)
+    current_day = workout_plan.currentDay
+    
+    exercises_for_today = WorkoutExercise.objects.filter(day=current_day).order_by('exercise_order')
+
+    exercises_data = []
+    for exercise in exercises_for_today:
+        exercises_data.append({
+            'exercise_name': exercise.exercise.name,
+            'weight': exercise.weight,
+            'sets': exercise.sets,
+            'reps': exercise.reps,
+            'rest_seconds': exercise.rest_seconds,
+            'exercise_order': exercise.exercise_order,
+        })
+
+    response_data = {
+        'workout_plan': {
+            'id': workout_plan.id,
+            'name': workout_plan.name,
+            'start_date': workout_plan.startDate,
+            'rest_days': workout_plan.restDays,
+            'current_day': current_day.day_order
+        },
+        'exercises_for_today': exercises_data
+    }
+    return JsonResponse(response_data)
