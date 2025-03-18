@@ -513,6 +513,7 @@ a.exercise-link:hover{
     border-radius: var(--default-border-radius);
     height: 5%;
     width: 50%;
+    overflow: hidden;
 }
 .title-box select{
     font-size: 1.5rem;

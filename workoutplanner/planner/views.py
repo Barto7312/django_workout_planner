@@ -119,7 +119,7 @@ def create_workout(request):
             name=data["name"],
             restDays=data["restDays"],
             startDate=data["startDate"],
-            owner=request.user  # Assuming user authentication
+            owner=request.user
         )
         return JsonResponse({"message": "Workout created successfully", "id": workout.id})
 

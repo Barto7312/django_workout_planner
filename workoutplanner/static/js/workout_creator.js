@@ -103,7 +103,6 @@ function loadWorkoutDetails(workoutId) {
     workoutDetailsBox.style.display = "flex";
     deleteWorkoutBtn.style.display = "block";
 
-
     fetch("/get_workouts/")
         .then(response => response.json())
         .then(data => {
