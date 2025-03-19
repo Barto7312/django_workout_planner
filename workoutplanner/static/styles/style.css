@@ -335,7 +335,25 @@ a.login-page-button{
     overflow: hidden;
 }
 
+/*Workout page*/
 
+.workout-menu{
+    display:none;
+    flex: 1;
+}
+.workout-window{
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    flex: 1;
+    display: flex;
+
+}
+.current-exercise{
+
+}
+.exercise-set{
+    display: flex;
+}
 
 
 
