@@ -32,7 +32,7 @@ function getWorkout(workoutId){
         if (startDateString === currentDateString) {
 
             data.exercises_for_today.forEach(exercise =>{
-                createUi(exercise);
+                createUi(exercise, "exercisesBox");
             });
     
             document.getElementById("workoutTitle").innerHTML = `${data.workout_plan.name} - Day ${data.workout_plan.current_day}`;
@@ -66,45 +66,6 @@ function getWorkout(workoutId){
 
     })
 
-
-    function createUi(exercise){
-        const mainBox = document.getElementById("exercisesBox");
-
-        //exercise div
-        const exerciseDiv = document.createElement("div");
-        exerciseDiv.classList.add("exercise")
-        mainBox.appendChild(exerciseDiv);
-
-        //info div
-        const infoDiv = document.createElement("div");
-        infoDiv.classList.add("display-info");
-        exerciseDiv.appendChild(infoDiv);
-
-        const setsRepsDiv = document.createElement("div");
-        setsRepsDiv.classList.add("display-sets-reps");
-        infoDiv.appendChild(setsRepsDiv);
-
-        const weightDiv = document.createElement("div");
-        weightDiv.classList.add("display-weight");
-        infoDiv.appendChild(weightDiv);
-
-        //name div
-        const nameDiv = document.createElement("div");
-        nameDiv.classList.add("display-name");
-        exerciseDiv.appendChild(nameDiv);
-
-        //rest div
-        const restDiv = document.createElement("div");
-        restDiv.classList.add("display-rest");
-        exerciseDiv.appendChild(restDiv);
-
-        setsRepsDiv.innerHTML = `${exercise.sets} sets x ${exercise.reps} reps`;
-        weightDiv.innerHTML = `${exercise.weight} KG`;
-        nameDiv.innerHTML = `${exercise.exercise_name}`;
-        restDiv.innerHTML = `Rest: ${exercise.rest_seconds}s`;
-
-    }
-
     function postponeWorkout(workoutId, startDateString){
 
         let startDate = new Date(startDateString);
@@ -129,7 +90,45 @@ function getWorkout(workoutId){
 
 }
 
+function createUi(exercise, parentDivId){
+    const mainBox = document.getElementById(parentDivId);
+
+    //exercise div
+    const exerciseDiv = document.createElement("div");
+    exerciseDiv.classList.add("exercise")
+    mainBox.appendChild(exerciseDiv);
+
+    //info div
+    const infoDiv = document.createElement("div");
+    infoDiv.classList.add("display-info");
+    exerciseDiv.appendChild(infoDiv);
+
+    const setsRepsDiv = document.createElement("div");
+    setsRepsDiv.classList.add("display-sets-reps");
+    infoDiv.appendChild(setsRepsDiv);
+
+    const weightDiv = document.createElement("div");
+    weightDiv.classList.add("display-weight");
+    infoDiv.appendChild(weightDiv);
+
+    //name div
+    const nameDiv = document.createElement("div");
+    nameDiv.classList.add("display-name");
+    exerciseDiv.appendChild(nameDiv);
+
+    //rest div
+    const restDiv = document.createElement("div");
+    restDiv.classList.add("display-rest");
+    exerciseDiv.appendChild(restDiv);
+
+    setsRepsDiv.innerHTML = `${exercise.sets} sets x ${exercise.reps} reps`;
+    weightDiv.innerHTML = `${exercise.weight} KG`;
+    nameDiv.innerHTML = `${exercise.exercise_name}`;
+    restDiv.innerHTML = `Rest: ${exercise.rest_seconds}s`;
+}
+
 function displayWorkout(workout){
+    const exerciseButton = document.getElementById("exerciseButton");
     document.getElementById("mainMenu").style.display = "none";
     document.getElementById("workoutMenu").style.display = "flex";
 
@@ -139,11 +138,39 @@ function displayWorkout(workout){
         return
     };
 
-    currentExercise = workout.exercises_for_today[0];
+    let currentExerciseNumber = 0
+    displayExercise(currentExerciseNumber);
 
-    displaySets(currentExercise);
+    exerciseButton.value = "Start Workout";
+    exerciseButton.onclick = function() {
+        startExercise
+        // currentExerciseNumber++;
+
+        // if (currentExerciseNumber == workout.exercises_for_today.length){
+        //     finishWorkout();
+        // }
+        // else{
+        //     currentExercise = workout.exercises_for_today[currentExerciseNumber];
+        //     displaySets(currentExercise);
+        // }
+    };
 
 
+    function displayExercise(currentExerciseNumber){
+        document.getElementById("setsWindow").innerHTML = "";
+        currentExercise = workout.exercises_for_today[currentExerciseNumber];
+        displaySets(currentExercise);
+
+        let currentSetNumber = 0;
+
+        if (currentSetNumber == 0){
+            exerciseButton.value = "Start Workout";
+        }
+        else if (currentSetNumber == currentExercise.sets - 1){
+            exerciseButton.value
+        }
+
+    }
 
 
 
@@ -151,8 +178,9 @@ function displayWorkout(workout){
     function displaySets(currentExercise){
         const setsWindow = document.getElementById("setsWindow");
         document.getElementById("exerciseName").innerHTML = `${currentExercise.exercise_name}`;
+        document.getElementById("exerciseDescription").innerHTML = `${currentExercise.exercise_description}`;
 
-        for (let i =0; i < currentExercise.sets; i++){
+        for (let i = 0; i < currentExercise.sets; i++){
 
             const setDiv = document.createElement("div");
             setDiv.classList.add("exercise-set");
@@ -174,13 +202,20 @@ function displayWorkout(workout){
 
             restDiv.innerHTML = `Rest ${currentExercise.rest_seconds} s`;
             weightDiv.innerHTML = `${currentExercise.weight} KG X ${currentExercise.reps} REPS`;
-            repDiv.innerHTML = `<p>Current reps</p><input class="input-field"></input>`;
+            currentRepDiv.innerHTML = "<p>Current reps</p>";
             repDiv.innerHTML = `<p>Set reps</p>${currentExercise.reps}`;
 
-
+            repInput = document.createElement("input");
+            repInput.id = `input${i}`;
+            repInput.disabled = true;
+            repInput.classList.add("input-field");
+            currentRepDiv.appendChild(repInput);
         }
 
-
+    }
+    
+    function finishWorkout(){
+        console.log("workout finished");
     }
 }
 

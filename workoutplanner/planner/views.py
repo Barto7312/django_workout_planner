@@ -296,6 +296,7 @@ def get_workout(request, workout_id):
             'reps': exercise.reps,
             'rest_seconds': exercise.rest_seconds,
             'exercise_order': exercise.exercise_order,
+            'exercise_description': exercise.exercise.description
         })
 
     response_data = {
