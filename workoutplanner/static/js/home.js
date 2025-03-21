@@ -128,52 +128,111 @@ function createUi(exercise, parentDivId){
 }
 
 function displayWorkout(workout){
+    //button prep
     const exerciseButton = document.getElementById("exerciseButton");
     document.getElementById("mainMenu").style.display = "none";
     document.getElementById("workoutMenu").style.display = "flex";
-
     document.getElementById("cancelWorkout").onclick = function() {
         document.getElementById("mainMenu").style.display = "flex";
         document.getElementById("workoutMenu").style.display = "none";
         return
     };
-
+    
+    //exercise counter
     let currentExerciseNumber = 0
+
+    //display 1st exercise
     displayExercise(currentExerciseNumber);
 
-    exerciseButton.value = "Start Workout";
-    exerciseButton.onclick = function() {
-        startExercise
-        // currentExerciseNumber++;
 
-        // if (currentExerciseNumber == workout.exercises_for_today.length){
-        //     finishWorkout();
-        // }
-        // else{
-        //     currentExercise = workout.exercises_for_today[currentExerciseNumber];
-        //     displaySets(currentExercise);
-        // }
-    };
+
+
 
 
     function displayExercise(currentExerciseNumber){
         document.getElementById("setsWindow").innerHTML = "";
+
+        console.log("ex leng" + workout.exercises_for_today.length);
+        console.log("ex" + currentExerciseNumber);
+
+        if (currentExerciseNumber == workout.exercises_for_today.length){
+            finishWorkout();
+            return
+        }
+        else if (currentExerciseNumber == 0){
+            exerciseButton.innerHTML = "Start Workout";
+        }
+        else{
+            exerciseButton.innerHTML = "Start Exercise";
+        }
+
+        let setsWeightArray = [];
+
         currentExercise = workout.exercises_for_today[currentExerciseNumber];
         displaySets(currentExercise);
-
         let currentSetNumber = 0;
-
-        if (currentSetNumber == 0){
-            exerciseButton.value = "Start Workout";
-        }
-        else if (currentSetNumber == currentExercise.sets - 1){
-            exerciseButton.value
-        }
-
+        
+        exerciseButton.onclick = function() {
+            doExercise(currentSetNumber, setsWeightArray);
+        };
     }
 
+    function doExercise(currentSetNumber, setsWeightArray){
+        setWeight = document.getElementById(`input${currentSetNumber}`)
+        setWeight.disabled = false;
+        
+        if (currentSetNumber == currentExercise.sets - 1){
+            if (currentExerciseNumber == workout.exercises_for_today.lenght){
+                exerciseButton.innerHTML = "End Workout";
+                finishWorkout();
+            }
+            else{
+                exerciseButton.innerHTML = "Next Exercise";
+                exerciseButton.onclick = function() {
+                    currentExerciseNumber++;
+                    setsWeightArray.push(setWeight.value);
+                    adjustWeight(setsWeightArray);
+                    displayExercise(currentExerciseNumber);
+                };
+            }
+        }
+        else{
+            exerciseButton.innerHTML = "Next Set";
+            exerciseButton.onclick = function() {
+                currentSetNumber++;
+                setsWeightArray.push(setWeight.value);
+                doExercise(currentSetNumber, setsWeightArray);
+            };
+        }
+    }
 
+    function adjustWeight(setsWeightArray){
+        sum = 0;
+        setsWeightArray.forEach((weight) => {
+            sum += parseInt(weight);
+          });
 
+        mean = sum / setsWeightArray.length;
+
+        // console.log(sum);
+        // console.log(mean);
+        // console.log(currentExercise.weight);
+
+        if (mean >= currentExercise.reps){
+            popup();
+        }
+        else if (mean <  currentExercise.reps / 2){
+            console.log("Decrease Weight!");
+        }
+    }
+
+    function popup(){
+        console.log("POPUP");
+        popupDiv = document.createElement("div");
+        popupDiv.classList.add("popup");
+        popupDiv.innerHTML = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        document.getElementById("setsWindow").appendChild(popupDiv);
+    }
 
     function displaySets(currentExercise){
         const setsWindow = document.getElementById("setsWindow");
@@ -208,7 +267,8 @@ function displayWorkout(workout){
             repInput = document.createElement("input");
             repInput.id = `input${i}`;
             repInput.disabled = true;
-            repInput.classList.add("input-field");
+            repInput.type = "number"
+            // repInput.classList.add("input-field");
             currentRepDiv.appendChild(repInput);
         }
 
@@ -216,6 +276,7 @@ function displayWorkout(workout){
     
     function finishWorkout(){
         console.log("workout finished");
+        return
     }
 }
 

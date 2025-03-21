@@ -91,6 +91,12 @@ input:focus {
     color:var(--bg-white);
 }
 
+.popup{
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    position: absolute;
+    text-align: center;
+}
 
 /*========== login page ==========*/
 
@@ -342,14 +348,83 @@ a.login-page-button{
     flex: 1;
 }
 .workout-window{
-    border: var(--content-border);
+    border: var(--content-border-bold);
     border-radius: var(--default-border-radius);
     flex: 1;
     display: flex;
+    margin: 2rem;
 
 }
 .current-exercise{
+    flex: 6;
+    border-right: var(--content-border-bold);
+    border-radius: var(--default-border-radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.current-exercise-name{
+    font-size: 2.5rem;
+    border-bottom: var(--content-border-bold);
+    width: 100%;
+    text-align: center;
+    background-color: #E36868;
+    color: var(--bg-white);
+}
+
+.sets-window{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 1rem;
+    width: 90%;
+}
+
+.exercise-set{
+    border: var(--content-border);
+    border-radius: var(--default-border-radius);
+    display: flex;
+    align-items: center;
+    height: 30%;
+    overflow-y: auto;
+    width: 100%;
+    justify-content: space-evenly;
+}
+.exercise-set div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.current-workout-buttons{
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem;
+    align-items: center;
+}
+
+#exerciseButton{
+    font-size: 2rem;
+    width: 80%;
+}
+
+#cancelWorkout{
+    width: 50%;
+}
+
+
+
+.details-div{
+    flex: 4;
+    padding: 1rem;
 }
 .exercise-set{
     display: flex;
