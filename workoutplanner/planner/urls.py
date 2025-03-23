@@ -22,7 +22,10 @@ urlpatterns = [
     path('remove_exercise/<int:exercise_id>/', views.remove_exercise, name="remove_exercise"),
     path('update_exercises/<int:day_id>/', views.update_exercises, name='update_exercises'),
 
-    path('get_workout/<int:workout_id>/', views.get_workout, name="get_workout"),
+    path('get_default_workout/', views.get_default_workout, name="get_default_workout"),
     path('update_workout_time/<int:workout_id>/', views.update_workout_time, name="update_workout_time"),
-
+    path('update_weight/', views.update_weight, name="update_weight"),
+    path('move_to_next_day/<int:workout_id>/', views.move_to_next_day, name="move_to_next_day"),
+    
+    path('set_default_workout/', views.set_default_workout, name="set_default_workout")
 ]

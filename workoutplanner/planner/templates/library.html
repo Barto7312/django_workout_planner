@@ -6,11 +6,7 @@
         <div class="exercise-name" id="exercise-name"></div>
 
         <div class="exercise-content">
-            <div class="exercise-left-box">
-                <div class="exercise-video" id="exercise-video"></div>
-                <div class="exercise-muscles" id="exercise-muscles"></div>
-            </div>
-
+            <div class="exercise-image" id="exercise-image"></div>
             <div class="exercise-description" id="exercise-description"></div>
         </div>
     </div>
@@ -36,9 +32,7 @@
                     {{ category.name }}
                     <div class="category-exercises">
                         {% for exercise in category.category_exercises.all %}
-                            <div class="exercise-item">
-                                <a href="#" class="exercise-link" data-exercise-id="{{ exercise.id }}">{{ exercise.name }}</a>
-                            </div>
+                            <button class="exercise-button" data-exercise-id="{{ exercise.id }}">{{ exercise.name }}</button>
                         {% endfor %}
                     </div>
                 </div>

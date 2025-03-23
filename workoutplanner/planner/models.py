@@ -1,13 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User 
-# from users.models import CustomUser
+from django.conf import settings
 
-class MuscleGroup(models.Model):
-    name = models.CharField(max_length=200, unique=True)
-    
-    def __str__(self):
-        return self.name   
-    
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
@@ -16,11 +9,9 @@ class Category(models.Model):
 
 class Exercise(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    icon = models.ImageField(blank=True, null=True)
-    video = models.FileField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
     description = models.TextField(max_length=1000, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="category_exercises")
-    muscle_groups = models.ManyToManyField(MuscleGroup, related_name="muscle_exercises")
 
     def __str__(self):
         return self.name    
@@ -30,7 +21,7 @@ class WorkoutPlan(models.Model):
     description = models.TextField(blank=True, null=True)
     restDays = models.IntegerField()
     startDate = models.DateField()
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workouts')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='workouts')
     currentDay = models.ForeignKey('WorkoutDay', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):

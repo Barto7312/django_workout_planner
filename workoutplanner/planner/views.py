@@ -4,9 +4,10 @@ from django.http import HttpResponse
 from .models import Exercise, Category, WorkoutPlan, WorkoutDay, WorkoutExercise
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
+# from django.conf import settings
 
+# User = settings.AUTH_USER_MODEL
 
 # Create your views here.
 
@@ -53,8 +54,7 @@ def exercise_details(request, exercise_id):
     exercise_data = {
         'name': exercise.name,
         'description': exercise.description,
-        'muscles': [muscle.name for muscle in exercise.muscle_groups.all()],  
-        'video_url': exercise.video.url if exercise.video else None,
+        'image_url': exercise.image.url if exercise.image else None,
     }
     return JsonResponse(exercise_data)
 
@@ -81,7 +81,9 @@ def update_workout_time(request, workout_id):
             workout.save()
             return JsonResponse({'message': 'Workout updated successfully'})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)        
+            return JsonResponse({'error': str(e)}, status=400)
+        
+
 
 @csrf_exempt
 @login_required
@@ -121,6 +123,11 @@ def create_workout(request):
             startDate=data["startDate"],
             owner=request.user
         )
+
+        if request.user.selected_workout_plan is None:
+            request.user.selected_workout_plan = workout
+            request.user.save(update_fields=['selected_workout_plan'])        
+
         return JsonResponse({"message": "Workout created successfully", "id": workout.id})
 
 
@@ -143,6 +150,11 @@ def create_day(request):
         day = WorkoutDay.objects.create(
             workout_plan=workout_plan
         )
+
+        if workout_plan.days.count() == 1:  
+            workout_plan.currentDay = day
+            workout_plan.save(update_fields=['currentDay'])      
+
         return JsonResponse({"message": "Day created successfully", "id": day.id})
 
 @csrf_exempt
@@ -160,8 +172,6 @@ def delete_day(request, day_id):
         return JsonResponse({"message": "Day deleted successfully."})
 
     return JsonResponse({"error": "Invalid request"}, status=400)
-
-
 
 
 @login_required
@@ -278,13 +288,34 @@ def update_exercises(request, day_id):
 
         return JsonResponse({"success": True, "day_order": day.day_order})
     
+@login_required
+@csrf_exempt
+def set_default_workout(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        workout_id = data.get("workout_id")
+        
+        workout = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
+
+        request.user.selected_workout_plan = workout
+        request.user.save()
+
+        return JsonResponse({"message": f"Default workout changed to {workout.name}."}, status=200)
+        
+
+
+
 #home
 @login_required
-def get_workout(request, workout_id):
+def get_default_workout(request):
     
-    workout_plan = get_object_or_404(WorkoutPlan, id=workout_id)
+    workout_plan = request.user.selected_workout_plan
+
+    if not workout_plan:
+        return JsonResponse({"message": "No workouts! <br> Please create a workout in the workout creator."})
+
     current_day = workout_plan.currentDay
-    
+
     exercises_for_today = WorkoutExercise.objects.filter(day=current_day).order_by('exercise_order')
 
     exercises_data = []
@@ -296,7 +327,8 @@ def get_workout(request, workout_id):
             'reps': exercise.reps,
             'rest_seconds': exercise.rest_seconds,
             'exercise_order': exercise.exercise_order,
-            'exercise_description': exercise.exercise.description
+            'exercise_description': exercise.exercise.description,
+            'exercise_id': exercise.id
         })
 
     response_data = {
@@ -310,3 +342,52 @@ def get_workout(request, workout_id):
         'exercises_for_today': exercises_data
     }
     return JsonResponse(response_data)
+
+@csrf_exempt  
+@login_required
+def update_weight(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            exercise_id = data.get("exercise_id")
+            new_weight = data.get("new_weight")
+
+            workout_exercise = WorkoutExercise.objects.get(id=exercise_id)
+            
+            # Sprawdzenie, czy użytkownik jest właścicielem planu treningowego
+            if workout_exercise.day.workout_plan.owner != request.user:
+                return JsonResponse({"error": "Permission denied"}, status=403)
+            
+            workout_exercise.weight = new_weight
+            workout_exercise.save()
+            
+            return JsonResponse({"success": True, "new_weight": workout_exercise.weight})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    
+
+@csrf_exempt  
+@login_required
+def move_to_next_day(request, workout_id): 
+    workout_plan = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
+
+    next_day = WorkoutDay.objects.filter(
+        workout_plan=workout_plan,
+        day_order__gt=workout_plan.currentDay.day_order
+    ).order_by('day_order').first()
+
+    if next_day:
+        workout_plan.currentDay = next_day
+        workout_plan.save()
+        return JsonResponse({"message": f"Moved to Day {next_day.day_order}."})    
+
+    first_day = WorkoutDay.objects.filter(
+        workout_plan=workout_plan
+    ).order_by('day_order').first()
+
+    if first_day:
+        workout_plan.currentDay = first_day
+        workout_plan.save()
+        return JsonResponse({"message": f"Reset to Day {first_day.day_order}."})
+
+    return JsonResponse({"message": "No workout days available."}, status=400)

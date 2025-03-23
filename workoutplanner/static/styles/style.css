@@ -40,20 +40,33 @@ body{
 button{
     background: none;
     border-radius: var(--default-border-radius);
-    border: none; 
-    color: inherit;
+    border: var(--content-border); 
+    color: var(--bg-white);
+    background-color: var(--bg-red);
     font: inherit; 
-    padding: 0; 
+    padding: 0.5rem; 
     cursor: pointer;
-    padding: 0.5rem;
-    border: var(--content-border);
-    box-shadow: 1px 1px  var(--font-red);
+    text-decoration: none;
 }
 
 button:hover{
-    background-color: var(--bg-red);
-    color: var(--bg-white);
+    border: var(--content-border);
     border-radius: var(--default-border-radius);
+    background-color: var(--bg-white);
+    color: var(--bg-red);
+    border-radius: var(--default-border-radius);
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 /*========== components ==========*/
@@ -72,13 +85,16 @@ button:hover{
     height:100%;
     width: 100%;
     display: block; 
-    caret-color: var(--font-red);
+    caret-color: var(--bg-white);
     border: none;
     border-radius: var(--default-border-radius);
-    color: var(--font-red);
+    color: var(--font-white);
     padding: 0.25rem;
     outline: none;
-    background-color: var(--bg-white);
+    background-color: var(--bg-red);
+}
+.search-box::placeholder{
+    color:var(--bg-white);
 }
 
 input:focus {
@@ -291,6 +307,11 @@ a.login-page-button{
     justify-content: space-evenly;
     flex: 1;
     overflow-y: auto;
+
+}
+.exercise-box p{
+    text-align: center;
+    font-size: 3rem;
 }
 
 .day-message{
@@ -310,6 +331,13 @@ a.login-page-button{
     font-size: 1.5rem;
     padding: 1rem;
 }
+.exercise div{
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 .display-info{
     display: flex;
@@ -324,21 +352,40 @@ a.login-page-button{
     flex: 1;
     text-align: center;
     font-size: 3rem;
+    border-right: var(--content-border);
+    border-left: var(--content-border);
 }
 
 .display-rest{
     width: 30%;
     text-align: center;
+    font-size: 2rem;
+}
+
+.display-sets-reps{
+    font-size: 2rem;
+}
+.display-weight{
+    font-size: 2rem;
 }
 
 
 .buttons-box{
-    width: 60%;
+    width: 70%;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    font-size: 3rem;
     overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+#startButton{
+    width: 100%;
+    font-size: 4rem;
+}
+#postopneButton{
+    width: 50%;
+    font-size: 2rem;
 }
 
 /*Workout page*/
@@ -378,10 +425,11 @@ a.login-page-button{
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    /* justify-content: space-evenly; */
     align-items: center;
     gap: 1rem;
-    width: 90%;
+    padding: 1rem;
+    width: 100%;
 }
 
 .exercise-set{
@@ -392,14 +440,48 @@ a.login-page-button{
     height: 30%;
     overflow-y: auto;
     width: 100%;
-    justify-content: space-evenly;
+    padding: 1rem;
 }
 .exercise-set div{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    height: 100%;
+    overflow: hidden;
+}
+
+.exercise-rep{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    width: 15%;
+    border-left: var(--content-border);
     font-size: 2rem;
+}
+.exercise-rep p{
+    text-align: center;
+    font-size: 2rem;
+}
+
+.exercise-rep input{
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.exercise-rest{
+    width: 10%;
+    font-size: 2rem;
+}
+
+.exercise-weight{
+    width: 60%;
+    border-left: var(--content-border);
+    font-size: 4rem;
 }
 
 .current-workout-buttons{
@@ -431,9 +513,8 @@ a.login-page-button{
 }
 
 
+/*======================================== LIBRARY ========================================*/
 
-
-/*========== library ==========*/
 .library{
     display:flex;
     flex: 1;
@@ -451,6 +532,7 @@ a.login-page-button{
     flex-direction: column;
     align-items: center;
     width: 80%;
+    overflow: hidden;
 }
 
 .library-search{
@@ -460,6 +542,8 @@ a.login-page-button{
 }
 
 .exercise-name{
+    background-color: var(--bg-red);
+    color: var(--bg-white);
     text-align: center;
     border: var(--content-border);
     border-radius: var(--default-border-radius);
@@ -471,34 +555,39 @@ a.login-page-button{
 }
 
 .exercise-content{
-    border: var(--content-border);
+    border: var(--content-border-bold);
     border-radius: var(--default-border-radius);
     display: flex;
+    flex-direction: column;
     flex: 1;
     align-self: stretch;
     overflow: hidden;
 }
 
-.exercise-left-box{
-    border-right: var(--content-border);
+.exercise-image{
+    padding: 2rem;
     display: flex;
-    flex-direction: column;
-    flex:5;
+    justify-content: center;
+    align-items: center;
+    flex: 3;
+    border-bottom: var(--content-border-bold);
+}
+
+.exercise-image img{
+    height: 20rem;
+    width: 40rem;
+    border: var(--content-border-bold);
+    border-radius: var(--default-border-radius);
 }
 
 .exercise-description{
-    flex:5;
+    text-align: center;
+    flex: 7;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    justify-content: flex-start;
 }
-
-.exercise-video{
-    flex: 5;
-    border-bottom: var(--content-border);
-}
-
-.exercise-muscles{
-    flex:5;
-}
-
 
 .library-search{
     display: flex;
@@ -516,12 +605,14 @@ a.login-page-button{
 }
 
 .exercise-search-bar{
+    background-color: var(--bg-red);
     border: var(--content-border);
     border-radius: var(--default-border-radius);
     width: 70%;
 }
 
 .exercise-categories{
+    background-color: var(--bg-red);
     border: var(--content-border);
     border-radius: var(--default-border-radius);
     text-align: center;
@@ -556,28 +647,28 @@ a.login-page-button{
     padding-bottom: 1rem;
 }
 
-.exercise-item{
+.exercise-button{
     border: var(--content-border);
     border-radius: var(--default-border-radius);
     height: 4rem;
     overflow: hidden;
-    background-color: var(--bg-white);
-}
-
-a.exercise-link{
+    background-color: var(--bg-red);
+    color:var(--bg-white);
     text-decoration: none;
-    color:var(--font-red);
     display: flex;
     align-items: center;
     justify-content: center; 
-    height: 100%;
 }
-a.exercise-link:hover{
-    background-color: var(--bg-red);
-    color:var(--bg-white)
+.exercise-button:hover{
+    background-color: var(--bg-white);
+    color:var(--bg-red);
 }
 
-/*========== Creator ==========*/
+
+
+
+/*======================================== CREATOR ========================================*/
+
 /* main */
 .exercise-creator-body{
     display:flex;
@@ -607,6 +698,8 @@ a.exercise-link:hover{
     height: 5%;
     width: 50%;
     overflow: hidden;
+    background-color: var(--bg-red);
+    color: var(--bg-white);
 }
 .title-box select{
     font-size: 1.5rem;
@@ -650,6 +743,10 @@ a.exercise-link:hover{
     border-radius: var(--default-border-radius);
     height: 30%;
     overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
 }
 
 .workout-details{
@@ -726,6 +823,8 @@ a.exercise-link:hover{
 }
 
 .day-number{
+    background-color: var(--bg-red);
+    color: var(--bg-white);
     border: var(--content-border);
     border-radius: 75px;
     width: 2.7rem;
@@ -820,6 +919,8 @@ a.exercise-link:hover{
 }
 
 .exercise-details-order{
+    background-color: var(--bg-red);
+    color: var(--bg-white);
     border: var(--content-border);
     border-radius: 75px;
     width: 2.7rem;
@@ -861,6 +962,7 @@ a.exercise-link:hover{
 /* exercise details windows */
 .library-window{
     height: 100%;
+    width: 100%;
     display:flex;
     flex-direction: column;
 }

@@ -60,9 +60,7 @@
                             {{ category.name }}
                             <div class="category-exercises">
                                 {% for exercise in category.category_exercises.all %}
-                                    <div class="exercise-item">
-                                        <a href="#" class="exercise-link" id="addExercise" data-exercise-id="{{ exercise.id }}">{{ exercise.name }}</a>
-                                    </div>
+                                    <button class="exercise-button" data-exercise-id="{{ exercise.id }}">{{ exercise.name }}</button>
                                 {% endfor %}
                             </div>
                         </div>
@@ -75,17 +73,12 @@
         
         <div class="secondary-box-details">
             <div class="library-window hide" id="libraryWindow">
-                <!-- <div class="creator-exercise-content">
-
-                    <div class="creator-exercise-video" id="exerciseVideo"></div>
-                    <div class="creator-exercise-description" id="exerciseDescription"></div>
-                    
-                </div> -->
                 <div class="day-creator-buttons">
                     <button id="cancelDayCreation">Cancel</button>
                     <button id="saveDay">Save</button>
                 </div>
             </div>
+            <button id="setDefaultBtn" class="hide">Set as default workout</button>
         </div>
 
     </div>

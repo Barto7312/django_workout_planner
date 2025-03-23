@@ -22,6 +22,7 @@ const createWorkoutBtn = document.getElementById("createWorkout");
 const deleteWorkoutBtn = document.getElementById("deleteWorkout");
 const cancelCreationBtn = document.getElementById("cancelCreation");
 const saveWorkoutBtn = document.getElementById("saveWorkout");
+const setDefaultBtn = document.getElementById("setDefaultBtn");
 
 let isSelectBoxListenerAdded = false;
 
@@ -60,7 +61,7 @@ function fetchWorkouts(workoutId = null) {
             if (data.length === 0) {
                 titleTextBox.style.display = "block";
                 titleTextBox.innerHTML = "No workouts!";
-                mainBox.innerHTML = '<button id="createFirstWorkout">Create New Workout +</button>'; //to edit
+                mainBox.innerHTML = '<button id="createFirstWorkout">Create New Workout</button>'; //to edit
                 document.getElementById("createFirstWorkout").onclick = () => showWorkoutForm();
                 return;
             }
@@ -102,6 +103,21 @@ function loadWorkoutDetails(workoutId) {
     createWorkoutBtn.style.display = "block";
     workoutDetailsBox.style.display = "flex";
     deleteWorkoutBtn.style.display = "block";
+    setDefaultBtn.style.display = "block";
+
+    setDefaultBtn.onclick = function(){
+
+        fetch(`/set_default_workout/`,{
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({workout_id: workoutId}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+        })
+        .catch(error => console.error("Error setting default workout:", error));
+    };
 
     fetch("/get_workouts/")
         .then(response => response.json())
@@ -118,6 +134,7 @@ function loadWorkoutDetails(workoutId) {
             saveWorkoutBtn.dataset.mode = "edit";
 
             fetchWorkoutDays(workoutId);
+
         })
         .catch(error => console.error("Error loading workout details:", error));
 }
@@ -159,7 +176,7 @@ function saveWorkout() {
         .then(response => response.json())
         .then(data => {
             console.log(data.message);
-            fetchWorkouts();
+            fetchWorkouts(workoutId);
         })
         .catch(error => console.error("Error updating workout:", error));
     } else {
@@ -171,9 +188,13 @@ function saveWorkout() {
         .then(response => response.json())
         .then(data => {
             console.log(data.message);
-            fetchWorkouts();
+            createDay(data.id);
+            fetchWorkouts(data.id);
         })
         .catch(error => console.error("Error updating workout:", error));
+
+
+
     }
 }
 
@@ -199,6 +220,7 @@ function deleteWorkout() {
 
 //Display all days
 function fetchWorkoutDays(workoutId) {
+    console.log("Fetching workout days...");
     fetch(`/fetch_days/${workoutId}/`)
         .then(response => response.json())
         .then(data => {
@@ -211,67 +233,60 @@ function fetchWorkoutDays(workoutId) {
 
             if (data.length === 0) {
                 mainBox.innerHTML = "<p>No workout days available.</p>";
-                const createDayButton = document.createElement("button");
-                mainBox.appendChild(createDayButton);
-                createDayButton.textContent = "Add a day";
-                createDayButton.id = "addDayBtn";
-
-                createDayButton.onclick = () => createDay(workoutId);
-    
-                return;
             }
 
             data.forEach(day => {
-                //create main day div
+                // Create main day div
                 const dayDiv = document.createElement("div");
                 dayDiv.classList.add("workout-day");
                 mainBox.appendChild(dayDiv);
 
-                //create day's content div
+                // Create day's content div
                 const dayContent = document.createElement("div");
                 dayContent.classList.add("day-content");
                 dayDiv.appendChild(dayContent);
-                
-                //create day order div
+
+                // Create day order div
                 const dayNumber = document.createElement("div");
                 dayNumber.classList.add("day-number");
                 dayContent.appendChild(dayNumber);
                 dayNumber.textContent = day.day_order;
 
-                //fetch exercises and create divs
-                displayExercises(day.id, dayContent); 
+                // Fetch exercises and create divs
+                displayExercises(day.id, dayContent);
 
-                //create div for edit/delete buttons
+                // Create div for edit/delete buttons
                 const buttonsDiv = document.createElement("div");
                 buttonsDiv.classList.add("day-buttons");
                 dayDiv.appendChild(buttonsDiv);
 
-                //create delete button
+                // Create delete button
                 const deleteButton = document.createElement("button");
                 deleteButton.textContent = "Delete";
                 deleteButton.id = `delete-button-${day.id}`;
-
-                deleteButton.onclick = () => deleteDay(day.id, workoutId); 
-                
+                deleteButton.onclick = () => deleteDay(day.id, workoutId);
                 buttonsDiv.appendChild(deleteButton);
 
-                //create edit button
+                // Create edit button
                 const editButton = document.createElement("button");
                 editButton.textContent = "Edit";
                 editButton.id = `edit-button-${day.id}`;
-
-                editButton.onclick = () => displayDay(day, workoutId); 
-
+                editButton.onclick = () => displayDay(day, workoutId);
                 buttonsDiv.appendChild(editButton);
             });
 
+            // Add "Add a Day" button
             const createDayButton = document.createElement("button");
-            mainBox.appendChild(createDayButton);
             createDayButton.textContent = "Add a day";
             createDayButton.id = "addDayBtn";
+            mainBox.appendChild(createDayButton);
 
-            createDayButton.onclick = () => createDay(workoutId); 
-
+            createDayButton.onclick = async function() {
+                console.log("Creating new day...");
+                await createDay(workoutId);  
+                console.log("Day created, now fetching updated list...");
+                fetchWorkoutDays(workoutId);
+            };
         })
         .catch(error => {
             console.error("Error fetching workout days:", error);
@@ -285,6 +300,13 @@ function displayExercises(dayId, exerciseBox) {
     .then(data => {
         if (data.error) {
             console.error("Error fetching exercises:", data.error);
+            return;
+        }
+
+        if (data.length === 0){
+            const message = document.createElement("p")
+            message.innerHTML = "Edit day to add exercises."
+            exerciseBox.appendChild(message);
             return;
         }
 
@@ -329,18 +351,20 @@ function displayExercises(dayId, exerciseBox) {
 }
 
 //createDay
-function createDay(workoutId){
-    fetch(`/create_day/`, {
+function createDay(workoutId) {
+    return fetch(`/create_day/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workout_plan_id: workoutId })  
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data.message);
-        fetchWorkoutDays(workoutId);
+        console.log("Workout day created:", data.message);
+        return data; // Return data so we can wait for this function to complete
     })
-    .catch(error => console.error("Error adding day:", error));
+    .catch(error => {
+        console.error("Error adding day:", error);
+    });
 }
 
 //deleteDay
@@ -410,6 +434,11 @@ function loadExercises(dayId) {
 function renderExercises() {
     mainBox.innerHTML = "";
     let order = 1;
+
+    if (pendingExercises.length === 0){
+        mainBox.innerHTML = "<p>Click an exercise to add it to the day</p>";
+    }
+
     pendingExercises.forEach((exercise, index) => {
         if (exercise.action === "deleted") return; 
 
@@ -561,7 +590,7 @@ function loadExerciseList(){
     secondaryBox.style.display = "flex";
     exerciseListBox.style.display = "flex";
     libraryWindow.style.display = "flex";
-    const exerciseLinks = document.querySelectorAll('.exercise-link');
+    const exerciseLinks = document.querySelectorAll('.exercise-button');
 
     exerciseLinks.forEach(link => {
         link.onclick = function(e) {
@@ -594,7 +623,7 @@ function filterExercises() {
 
     exerciseCategories.forEach((category) => {
         let hasVisibleExercise = false;
-        const exercises = category.querySelectorAll(".exercise-item");
+        const exercises = category.querySelectorAll(".exercise-button");
 
         exercises.forEach((exercise) => {
             const exerciseName = exercise.textContent.toLowerCase();

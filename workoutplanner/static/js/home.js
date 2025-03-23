@@ -1,16 +1,22 @@
 document.addEventListener("DOMContentLoaded", function() 
 {  
-    getWorkout(8);
+    getDefaultWorkout();
 });
 
 
-function getWorkout(workoutId){
+function getDefaultWorkout(){
     document.getElementById("mainMenu").style.display = "flex";
     document.getElementById("workoutMenu").style.display = "none";
 
-    fetch(`/get_workout/${workoutId}`)
+    fetch(`/get_default_workout/`)
     .then(response => response.json())
     .then(data =>{
+
+        if (data.message) {
+            document.getElementById("exercisesBox").innerHTML = `<p>${data.message}</p>`;
+            document.getElementById("buttonBox").style.display = "none";
+            return;
+        }
 
         const startDate = new Date(data.workout_plan.startDate);
         const currentDate = new Date();
@@ -24,6 +30,8 @@ function getWorkout(workoutId){
         console.log(startDateString);
         console.log(currentDateString);
 
+        document.getElementById("workoutTitle").innerHTML = `${data.workout_plan.name} - Day ${data.workout_plan.current_day}`;
+
         if (data.error) {
             console.error("Error fetching workout:", data.error);
             return;
@@ -31,19 +39,27 @@ function getWorkout(workoutId){
 
         if (startDateString === currentDateString) {
 
+            console.log(data.exercises_for_today.length);
+
+            if (data.exercises_for_today.length === 0){
+                document.getElementById("exercisesBox").innerHTML = "<p>No exercises! </br> Please add exercises in the creator.</p>";
+                return
+            }
+
             data.exercises_for_today.forEach(exercise =>{
                 createUi(exercise, "exercisesBox");
             });
     
-            document.getElementById("workoutTitle").innerHTML = `${data.workout_plan.name} - Day ${data.workout_plan.current_day}`;
-
         } else {
             console.log("dupa");
-            const daysToWorkout = Math.floor((startDate - currentDate) / (1000 * 60 * 60 * 24));
+            const daysToWorkout = Math.floor((startDate - currentDate) / (1000 * 60 * 60 * 24)) - 1;
 
             if (daysToWorkout == 1){
                 exercisesBox.innerHTML = `<div class="day-message"> No workout for today! <br> Come back in ${daysToWorkout} day. </div>`;
 
+            }
+            else if (daysToWorkout == 0){
+                exercisesBox.innerHTML = `<div class="day-message"> No workout for today! <br> Come back tomorrow!</div>`;
             }
             else{
                 exercisesBox.innerHTML = `<div class="day-message"> No workout for today! <br> Come back in ${daysToWorkout} days. </div>`;
@@ -57,7 +73,7 @@ function getWorkout(workoutId){
 
         document.getElementById("postopneButton").onclick = function() {
             postponeWorkout(workoutId, startDateString);
-            getWorkout(workoutId);
+            getDefaultWorkout();
         };
 
         document.getElementById("startButton").onclick = function() {
@@ -89,6 +105,7 @@ function getWorkout(workoutId){
     }
 
 }
+
 
 function createUi(exercise, parentDivId){
     const mainBox = document.getElementById(parentDivId);
@@ -147,8 +164,6 @@ function displayWorkout(workout){
 
 
 
-
-
     function displayExercise(currentExerciseNumber){
         document.getElementById("setsWindow").innerHTML = "";
 
@@ -156,7 +171,7 @@ function displayWorkout(workout){
         console.log("ex" + currentExerciseNumber);
 
         if (currentExerciseNumber == workout.exercises_for_today.length){
-            finishWorkout();
+            finishWorkout(workout);
             return
         }
         else if (currentExerciseNumber == 0){
@@ -173,25 +188,25 @@ function displayWorkout(workout){
         let currentSetNumber = 0;
         
         exerciseButton.onclick = function() {
-            doExercise(currentSetNumber, setsWeightArray);
+            doExercise(currentSetNumber, setsWeightArray, currentExercise);
         };
     }
 
-    function doExercise(currentSetNumber, setsWeightArray){
+    function doExercise(currentSetNumber, setsWeightArray, currentExercise){
         setWeight = document.getElementById(`input${currentSetNumber}`)
         setWeight.disabled = false;
         
         if (currentSetNumber == currentExercise.sets - 1){
-            if (currentExerciseNumber == workout.exercises_for_today.lenght){
+            if (currentExerciseNumber == workout.exercises_for_today.length){
                 exerciseButton.innerHTML = "End Workout";
-                finishWorkout();
+                finishWorkout(workout);
             }
             else{
                 exerciseButton.innerHTML = "Next Exercise";
                 exerciseButton.onclick = function() {
                     currentExerciseNumber++;
                     setsWeightArray.push(setWeight.value);
-                    adjustWeight(setsWeightArray);
+                    adjustWeight(setsWeightArray, currentExercise);
                     displayExercise(currentExerciseNumber);
                 };
             }
@@ -201,37 +216,51 @@ function displayWorkout(workout){
             exerciseButton.onclick = function() {
                 currentSetNumber++;
                 setsWeightArray.push(setWeight.value);
-                doExercise(currentSetNumber, setsWeightArray);
+                doExercise(currentSetNumber, setsWeightArray, currentExercise);
             };
         }
     }
 
-    function adjustWeight(setsWeightArray){
+    function adjustWeight(setsWeightArray, currentExercise){
         sum = 0;
         setsWeightArray.forEach((weight) => {
+            // weigh = typeof weigh !== "undefined" ? weigh : 0;
             sum += parseInt(weight);
           });
 
         mean = sum / setsWeightArray.length;
 
-        // console.log(sum);
-        // console.log(mean);
-        // console.log(currentExercise.weight);
-
         if (mean >= currentExercise.reps){
-            popup();
+            newWeight = currentExercise.weight + 1;
+            updateWorkoutExerciseWeight(currentExercise.exercise_id, newWeight);
         }
         else if (mean <  currentExercise.reps / 2){
-            console.log("Decrease Weight!");
+            newWeight = currentExercise.weight - 1;
+            updateWorkoutExerciseWeight(currentExercise.exercise_id, newWeight);
         }
+
     }
 
-    function popup(){
-        console.log("POPUP");
-        popupDiv = document.createElement("div");
-        popupDiv.classList.add("popup");
-        popupDiv.innerHTML = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-        document.getElementById("setsWindow").appendChild(popupDiv);
+    function updateWorkoutExerciseWeight(exerciseId, newWeight) {
+        fetch('/update_weight/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                exercise_id: exerciseId,
+                new_weight: newWeight
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Weight updated successfully:', data.new_weight);
+            } else {
+                console.error('Error updating weight:', data.error);
+            }
+        })
+        .catch(error => console.error('Request failed:', error));
     }
 
     function displaySets(currentExercise){
@@ -259,24 +288,52 @@ function displayWorkout(workout){
             repDiv.classList.add("exercise-rep");
             setDiv.appendChild(repDiv);
 
-            restDiv.innerHTML = `Rest ${currentExercise.rest_seconds} s`;
+            restDiv.innerHTML = `Rest </br> ${currentExercise.rest_seconds} s`;
             weightDiv.innerHTML = `${currentExercise.weight} KG X ${currentExercise.reps} REPS`;
             currentRepDiv.innerHTML = "<p>Current reps</p>";
-            repDiv.innerHTML = `<p>Set reps</p>${currentExercise.reps}`;
+            repDiv.innerHTML = `<p>Set reps</p><p>${currentExercise.reps}</p>`;
 
             repInput = document.createElement("input");
             repInput.id = `input${i}`;
             repInput.disabled = true;
             repInput.type = "number"
-            // repInput.classList.add("input-field");
             currentRepDiv.appendChild(repInput);
         }
 
     }
     
-    function finishWorkout(){
-        console.log("workout finished");
-        return
+    function finishWorkout(workout) {
+        let startDate = new Date(workout.workout_plan.startDate);
+        startDate.setDate((startDate.getDate() + workout.workout_plan.rest_days) + 1);
+        startDate = startDate.toISOString().split('T')[0];
+    
+        let workoutData = {
+            startDate: startDate
+        };
+
+        fetch(`/update_workout_time/${workout.workout_plan.id}/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(workoutData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            
+      
+            fetch(`/move_to_next_day/${workout.workout_plan.id}/`, {  
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Workout day updated:", data.message);
+                getDefaultWorkout();  
+            })
+            .catch(error => console.error("Error updating workout day:", error));
+        })
+        .catch(error => console.error("Error updating workout:", error));
     }
+    
 }
 
