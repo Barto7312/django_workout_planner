@@ -110,8 +110,22 @@ input:focus {
 .popup{
     border: var(--content-border);
     border-radius: var(--default-border-radius);
-    position: absolute;
+    background-color: var(--bg-red);
+    color: var(--bg-white);
     text-align: center;
+    font-size: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+}
+.popup button{
+    background-color: var(--bg-white);
+    color: var(--bg-red);
+}
+.popup button:hover{
+    background-color: var(--bg-red);
+    color: var(--bg-white);
 }
 
 /*========== login page ==========*/
@@ -392,15 +406,16 @@ a.login-page-button{
 
 .workout-menu{
     display:none;
+    height: 100vh;
     flex: 1;
 }
 .workout-window{
     border: var(--content-border-bold);
     border-radius: var(--default-border-radius);
-    flex: 1;
     display: flex;
+    flex: 1;
     margin: 2rem;
-
+    
 }
 .current-exercise{
     flex: 6;
@@ -419,6 +434,7 @@ a.login-page-button{
     text-align: center;
     background-color: #E36868;
     color: var(--bg-white);
+    font-size: 2.5rem;
 }
 
 .sets-window{
@@ -430,6 +446,7 @@ a.login-page-button{
     gap: 1rem;
     padding: 1rem;
     width: 100%;
+    overflow-y: auto;
 }
 
 .exercise-set{
@@ -438,7 +455,6 @@ a.login-page-button{
     display: flex;
     align-items: center;
     height: 30%;
-    overflow-y: auto;
     width: 100%;
     padding: 1rem;
 }
@@ -448,7 +464,6 @@ a.login-page-button{
     align-items: center;
     justify-content: center;
     height: 100%;
-    overflow: hidden;
 }
 
 .exercise-rep{
@@ -456,21 +471,21 @@ a.login-page-button{
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    gap: 2rem;
     width: 15%;
     border-left: var(--content-border);
-    font-size: 2rem;
+    font-size: 1rem;
+    gap: 1rem;
 }
 .exercise-rep p{
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 .exercise-rep input{
     width: 3rem;
     height: 3rem;
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 .exercise-rest{
@@ -491,6 +506,8 @@ a.login-page-button{
     width: 100%;
     padding: 1rem;
     align-items: center;
+    height: 20%;
+    border-top: var(--content-border);
 }
 
 #exerciseButton{
@@ -507,9 +524,16 @@ a.login-page-button{
 .details-div{
     flex: 4;
     padding: 1rem;
+    overflow-y: auto;
 }
-.exercise-set{
-    display: flex;
+.current-exercise-details p{
+    border-bottom: var(--content-border-bold);
+    font-size: 2rem;
+    text-align: center;
+}
+
+.popup{
+    display: none;
 }
 
 
@@ -581,12 +605,15 @@ a.login-page-button{
 }
 
 .exercise-description{
-    text-align: center;
+    text-align: left;
     flex: 7;
     padding: 1rem;
     overflow-y: auto;
     display: flex;
     justify-content: flex-start;
+    font-size: 1.5rem;
+    height:50%;
+    overflow-y: auto;
 }
 
 .library-search{

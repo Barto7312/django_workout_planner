@@ -27,9 +27,6 @@ function getDefaultWorkout(){
         startDate.setHours(0, 0, 0, 0);
         currentDate.setHours(0, 0, 0, 0);
 
-        console.log(startDateString);
-        console.log(currentDateString);
-
         document.getElementById("workoutTitle").innerHTML = `${data.workout_plan.name} - Day ${data.workout_plan.current_day}`;
 
         if (data.error) {
@@ -38,8 +35,6 @@ function getDefaultWorkout(){
         }
 
         if (startDateString === currentDateString) {
-
-            console.log(data.exercises_for_today.length);
 
             if (data.exercises_for_today.length === 0){
                 document.getElementById("exercisesBox").innerHTML = "<p>No exercises! </br> Please add exercises in the creator.</p>";
@@ -51,7 +46,6 @@ function getDefaultWorkout(){
             });
     
         } else {
-            console.log("dupa");
             const daysToWorkout = Math.floor((startDate - currentDate) / (1000 * 60 * 60 * 24)) - 1;
 
             if (daysToWorkout == 1){
@@ -167,9 +161,6 @@ function displayWorkout(workout){
     function displayExercise(currentExerciseNumber){
         document.getElementById("setsWindow").innerHTML = "";
 
-        console.log("ex leng" + workout.exercises_for_today.length);
-        console.log("ex" + currentExerciseNumber);
-
         if (currentExerciseNumber == workout.exercises_for_today.length){
             finishWorkout(workout);
             return
@@ -207,7 +198,6 @@ function displayWorkout(workout){
                     currentExerciseNumber++;
                     setsWeightArray.push(setWeight.value);
                     adjustWeight(setsWeightArray, currentExercise);
-                    displayExercise(currentExerciseNumber);
                 };
             }
         }
@@ -233,12 +223,18 @@ function displayWorkout(workout){
         if (mean >= currentExercise.reps){
             newWeight = currentExercise.weight + 1;
             updateWorkoutExerciseWeight(currentExercise.exercise_id, newWeight);
+            message = "Based on your reps, exercise weight has been increased by 1KG";
+            displayPopup(message);
         }
         else if (mean <  currentExercise.reps / 2){
             newWeight = currentExercise.weight - 1;
             updateWorkoutExerciseWeight(currentExercise.exercise_id, newWeight);
+            message = "Based on your reps, exercise weight has been reduced by 1KG";
+            displayPopup(message);
         }
-
+        else{
+            displayExercise(currentExerciseNumber);
+        }
     }
 
     function updateWorkoutExerciseWeight(exerciseId, newWeight) {
@@ -267,6 +263,12 @@ function displayWorkout(workout){
         const setsWindow = document.getElementById("setsWindow");
         document.getElementById("exerciseName").innerHTML = `${currentExercise.exercise_name}`;
         document.getElementById("exerciseDescription").innerHTML = `${currentExercise.exercise_description}`;
+        document.getElementById("exerciseDescription").innerHTML = `${currentExercise.exercise_description}`;
+        if (currentExercise.image_url) {
+            document.getElementById('exerciseImage').innerHTML = `<img src="${currentExercise.image_url}">`;
+        } else {
+            document.getElementById('exerciseImage').innerHTML = '<p>No image available.</p>';
+        }
 
         for (let i = 0; i < currentExercise.sets; i++){
 
@@ -320,7 +322,6 @@ function displayWorkout(workout){
         .then(data => {
             console.log(data.message);
             
-      
             fetch(`/move_to_next_day/${workout.workout_plan.id}/`, {  
                 method: "POST",
                 headers: { "Content-Type": "application/json" }
@@ -335,5 +336,23 @@ function displayWorkout(workout){
         .catch(error => console.error("Error updating workout:", error));
     }
     
+    function displayPopup(message){
+        popupDiv = document.getElementById("popup");
+        popupMessage = document.getElementById("popupMessage");
+        closeButton = document.getElementById("closePopupBtn");
+    
+        document.getElementById("cancelWorkout").style.display = "none";
+        document.getElementById("exerciseButton").style.display = "none";
+        popupDiv.style.display = "block";
+    
+        popupMessage = document.getElementById("popupMessage");
+        popupMessage.innerHTML = message;
+    
+        closeButton.onclick = function() {
+            document.getElementById("cancelWorkout").style.display = "block";
+            document.getElementById("exerciseButton").style.display = "block";
+            popupDiv.style.display = "none";
+            displayExercise(currentExerciseNumber);
+        };
+    }
 }
-

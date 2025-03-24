@@ -328,7 +328,8 @@ def get_default_workout(request):
             'rest_seconds': exercise.rest_seconds,
             'exercise_order': exercise.exercise_order,
             'exercise_description': exercise.exercise.description,
-            'exercise_id': exercise.id
+            'exercise_id': exercise.id,
+            'image_url': exercise.exercise.image.url if exercise.exercise.image else None,
         })
 
     response_data = {
