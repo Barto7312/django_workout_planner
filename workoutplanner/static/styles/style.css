@@ -185,7 +185,15 @@ a.login-page-button{
 .login-page-button:hover{
     font-weight: bold;
 }
-
+.messages{
+    font-size: 2rem;
+    color: var(--font-red);
+    background-color: var(--bg-white);
+    margin-top: auto;
+    width: 100%;
+    border-top: var(--content-border-bold);
+    border-radius: var(--default-border-radius);
+}
 
 /*========== site layout ==========*/
 
