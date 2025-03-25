@@ -32,9 +32,10 @@ def loginUser(request):
 
 def registerUser(request):
     if request.user.is_authenticated:
-        return redirect('/')      
+        return redirect('/')
 
-    form = CustomUserCreationForm() 
+    form = CustomUserCreationForm()
+    
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -44,7 +45,11 @@ def registerUser(request):
             login(request, user)
             return redirect('/')
         else:
-            messages.error(request, "Error occurred during registration")
+            for field, errors in form.errors.items():
+                field_name = "Password" if field == "password1" else field.capitalize()
+                if field != "password2": 
+                    for error in errors:
+                        messages.error(request, f"{field_name}: {error}")
 
     context = {'form': form, 'hide_nav': True}
     return render(request, 'login_register.html', context)
