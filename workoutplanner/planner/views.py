@@ -1,22 +1,17 @@
 from django.shortcuts import render, get_object_or_404, redirect
 import json
-from django.http import HttpResponse
 from .models import Exercise, Category, WorkoutPlan, WorkoutDay, WorkoutExercise
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-# from django.conf import settings
 
-# User = settings.AUTH_USER_MODEL
-
-# Create your views here.
+################# PAGES ##################
 
 def main_menu(request):
     if not request.user.is_authenticated:
         return redirect('login')
     return render(request, 'home.html')
 
-#pages
 def workoutCreator(request):
 
     if not request.user.is_authenticated:
@@ -28,7 +23,6 @@ def workoutCreator(request):
         'categories': categories
     }
     return render(request, 'workout_creator.html', context)
-
 
 def library(request):
 
@@ -43,7 +37,7 @@ def library(request):
     return render(request, 'library.html', context)
 
 
-# API
+################# LIBRARY ##################
 
 #library
 @login_required
