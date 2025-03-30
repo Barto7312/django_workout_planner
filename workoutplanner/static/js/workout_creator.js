@@ -1,4 +1,3 @@
-
 //divs
 const mainBox = document.getElementById("mainWindow");
 const workoutDetailsBox = document.getElementById("workoutDetailsBox");
@@ -109,7 +108,10 @@ function loadWorkoutDetails(workoutId) {
 
         fetch(`/set_default_workout/`,{
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+            },
             body: JSON.stringify({workout_id: workoutId}),
         })
         .then(response => response.json())
@@ -170,7 +172,10 @@ function saveWorkout() {
     if (mode === "edit") {
         fetch(`/update_workout/${workoutId}/`,{
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+            },
             body: JSON.stringify(workoutData),
         })
         .then(response => response.json())
@@ -182,7 +187,10 @@ function saveWorkout() {
     } else {
         fetch(`/create_workout/`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+            },
             body: JSON.stringify(workoutData),
         })
         .then(response => response.json())
@@ -206,6 +214,9 @@ function deleteWorkout() {
 
     fetch(`/delete_workout/${workoutId}/`, {
         method: "DELETE",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+        },
     })
     .then(response => response.json())
     .then(data => {
@@ -277,7 +288,7 @@ function fetchWorkoutDays(workoutId) {
 
             // Add "Add a Day" button
             const createDayButton = document.createElement("button");
-            createDayButton.textContent = "Add a day";
+            createDayButton.textContent = "Add Day";
             createDayButton.id = "addDayBtn";
             mainBox.appendChild(createDayButton);
 
@@ -354,7 +365,10 @@ function displayExercises(dayId, exerciseBox) {
 function createDay(workoutId) {
     return fetch(`/create_day/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(),
+         },
         body: JSON.stringify({ workout_plan_id: workoutId })  
     })
     .then(response => response.json())
@@ -373,6 +387,9 @@ function deleteDay(dayId, workoutId) {
 
     fetch(`/delete_day/${dayId}/`, {
         method: "DELETE",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+        },
     })
     .then(response => response.json())
     .then(data => {
@@ -564,7 +581,10 @@ function updateExercise(index, field, value) {
 function saveChanges(dayId, workoutId) {
     fetch(`/update_exercises/${dayId}/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(),
+         },
         body: JSON.stringify(pendingExercises),
     })
     .then(response => response.json())
@@ -658,3 +678,9 @@ function filterExercises() {
     });
 }
 
+
+function getCSRFToken() {
+    return document.cookie.split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+}

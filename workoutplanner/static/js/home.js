@@ -4,28 +4,28 @@ document.addEventListener("DOMContentLoaded", function()
 });
 
 
-function getDefaultWorkout(){
+function getDefaultWorkout() {
     document.getElementById("mainMenu").style.display = "flex";
     document.getElementById("workoutMenu").style.display = "none";
 
     fetch(`/get_default_workout/`)
     .then(response => response.json())
-    .then(data =>{
-
+    .then(data => {
         if (data.message) {
             document.getElementById("exercisesBox").innerHTML = `<p>${data.message}</p>`;
             document.getElementById("buttonBox").style.display = "none";
             return;
         }
 
-        const startDate = new Date(data.workout_plan.startDate);
-        const currentDate = new Date();
-
-        const startDateString = startDate.toISOString().split('T')[0]; 
-        const currentDateString = currentDate.toISOString().split('T')[0];
-
-        startDate.setHours(0, 0, 0, 0);
-        currentDate.setHours(0, 0, 0, 0);
+        const startDate = new Date(Date.UTC(
+            ...data.workout_plan.startDate.split('-').map((num, idx) => idx === 1 ? Number(num) - 1 : Number(num))
+        ));
+        
+        const currentDate = new Date(Date.UTC(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate()
+        ));
 
         document.getElementById("workoutTitle").innerHTML = `${data.workout_plan.name} - Day ${data.workout_plan.current_day}`;
 
@@ -34,30 +34,26 @@ function getDefaultWorkout(){
             return;
         }
 
-        if (startDateString === currentDateString) {
+        console.log(startDate);
+        console.log(currentDate);
 
-            if (data.exercises_for_today.length === 0){
+        if (startDate.getTime() === currentDate.getTime()) {
+            if (data.exercises_for_today.length === 0) {
                 document.getElementById("exercisesBox").innerHTML = "<p>No exercises! </br> Please add exercises in the creator.</p>";
-                return
+                return;
             }
 
-            data.exercises_for_today.forEach(exercise =>{
+            document.getElementById("exercisesBox").innerHTML = "";
+            data.exercises_for_today.forEach(exercise => {
                 createUi(exercise, "exercisesBox");
             });
-    
+
         } else {
-            const daysToWorkout = Math.floor((startDate - currentDate) / (1000 * 60 * 60 * 24)) - 1;
+            const daysToWorkout = Math.floor((startDate - currentDate) / (1000 * 60 * 60 * 24));
 
-            if (daysToWorkout == 1){
-                exercisesBox.innerHTML = `<div class="day-message"> No workout for today! <br> Come back in ${daysToWorkout} day. </div>`;
-
-            }
-            else if (daysToWorkout == 0){
-                exercisesBox.innerHTML = `<div class="day-message"> No workout for today! <br> Come back tomorrow!</div>`;
-            }
-            else{
-                exercisesBox.innerHTML = `<div class="day-message"> No workout for today! <br> Come back in ${daysToWorkout} days. </div>`;
-            }
+            let message = `No workout for today! <br> Come back in ${daysToWorkout} ${daysToWorkout === 1 ? 'day' : 'days'}.`;
+            if (daysToWorkout === 0) message = "No workout for today! <br> Come back tomorrow!";
+            document.getElementById("exercisesBox").innerHTML = `<div class="day-message"> ${message} </div>`;
 
             document.getElementById("buttonBox").style.display = "none";
             document.getElementById("startButton").disabled = true;
@@ -65,40 +61,46 @@ function getDefaultWorkout(){
             document.getElementById("skipButton").disabled = true;
         }
 
-        document.getElementById("postopneButton").onclick = function() {
-            postponeWorkout(workoutId, startDateString);
-            getDefaultWorkout();
+        document.getElementById("postponeButton").onclick = async function() {
+            try {
+                // Poczekaj na zakończenie operacji przesunięcia treningu
+                await postponeWorkout(data.workout_plan.id, startDate);
+                // Po zakończeniu, pobierz zaktualizowane dane
+                getDefaultWorkout();
+            } catch (error) {
+                console.error("Error during postponing workout:", error);
+            }
         };
 
         document.getElementById("startButton").onclick = function() {
             displayWorkout(data);
         };
+    });
 
-    })
+    function postponeWorkout(workoutId, startDate) {
+        let newStartDate = new Date(startDate);
+        newStartDate.setUTCDate(newStartDate.getUTCDate() + 1);
+        let formattedDate = newStartDate.toISOString().split('T')[0];
 
-    function postponeWorkout(workoutId, startDateString){
+        let workoutData = { startDate: formattedDate };
 
-        let startDate = new Date(startDateString);
-        startDate.setDate(startDate.getDate() + 1);
-        startDate = startDate.toISOString().split('T')[0];
-
-        let workoutData = {
-            startDate: startDate,
-        }
-
-        fetch(`/update_workout_time/${workoutId}/`,{
+        return fetch(`/update_workout_time/${workoutId}/`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+            },
             body: JSON.stringify(workoutData),
-       })
-       .then(response => response.json())
-       .then(data => {
-           console.log(data.message);
-       })
-       .catch(error => console.error("Error updating workout:", error));
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            return data;
+        })
+        .catch(error => console.error("Error updating workout:", error));
     }
-
 }
+
 
 
 function createUi(exercise, parentDivId){
@@ -242,6 +244,7 @@ function displayWorkout(workout){
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                "X-CSRFToken": getCSRFToken(),
             },
             body: JSON.stringify({
                 exercise_id: exerciseId,
@@ -315,7 +318,10 @@ function displayWorkout(workout){
 
         fetch(`/update_workout_time/${workout.workout_plan.id}/`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+            },
             body: JSON.stringify(workoutData),
         })
         .then(response => response.json())
@@ -324,7 +330,9 @@ function displayWorkout(workout){
             
             fetch(`/move_to_next_day/${workout.workout_plan.id}/`, {  
                 method: "POST",
-                headers: { "Content-Type": "application/json" }
+                headers: { "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),    
+                }
             })
             .then(response => response.json())
             .then(data => {
@@ -355,4 +363,10 @@ function displayWorkout(workout){
             displayExercise(currentExerciseNumber);
         };
     }
+}
+
+function getCSRFToken() {
+    return document.cookie.split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
 }

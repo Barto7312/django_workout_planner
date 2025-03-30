@@ -3,7 +3,8 @@ import json
 from .models import Exercise, Category, WorkoutPlan, WorkoutDay, WorkoutExercise
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+
 
 ################# PAGES ##################
 
@@ -53,7 +54,7 @@ def exercise_details(request, exercise_id):
     return JsonResponse(exercise_data)
 
 
-#creator
+################# CREATOR ##################
 
 #workouts
 @login_required
@@ -62,7 +63,7 @@ def get_workouts(request):
     workouts_data = list(workouts.values('id', 'name', 'restDays', 'startDate')) #values_list
     return JsonResponse(workouts_data, safe=False)
 
-@csrf_exempt
+@csrf_protect
 @login_required
 def update_workout_time(request, workout_id):
     workout = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
@@ -77,9 +78,7 @@ def update_workout_time(request, workout_id):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
         
-
-
-@csrf_exempt
+@csrf_protect
 @login_required
 def update_workout(request, workout_id):
 
@@ -96,7 +95,7 @@ def update_workout(request, workout_id):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-@csrf_exempt
+@csrf_protect
 @login_required
 def delete_workout(request, workout_id):
     """Delete a workout."""
@@ -106,7 +105,7 @@ def delete_workout(request, workout_id):
         workout.delete()
         return JsonResponse({'message': 'Workout deleted successfully'})
 
-@csrf_exempt
+@csrf_protect
 @login_required
 def create_workout(request):
     if request.method == "POST":
@@ -124,8 +123,6 @@ def create_workout(request):
 
         return JsonResponse({"message": "Workout created successfully", "id": workout.id})
 
-
-
 #days
 @login_required
 def get_days(request, workout_id):
@@ -135,7 +132,7 @@ def get_days(request, workout_id):
 
     return JsonResponse(list(workout_days), safe=False)
 
-@csrf_exempt
+@csrf_protect
 @login_required
 def create_day(request):
     if request.method == "POST":
@@ -151,7 +148,7 @@ def create_day(request):
 
         return JsonResponse({"message": "Day created successfully", "id": day.id})
 
-@csrf_exempt
+@csrf_protect
 @login_required
 def delete_day(request, day_id):
     if request.method == 'DELETE':
@@ -169,91 +166,19 @@ def delete_day(request, day_id):
 
 
 @login_required
-def get_exercises_for_day(request, day_id):
+def fetch_exercises(request, day_id):
     workout_day = get_object_or_404(WorkoutDay, id=day_id, workout_plan__owner=request.user)
     exercises = workout_day.exercises.all().values(
         "id", "exercise", "exercise__name", "weight", "sets", "reps", "rest_seconds", "exercise_order"
     )
     return JsonResponse(list(exercises), safe=False)
 
-@csrf_exempt
-@login_required
-def update_exercises_for_day(request, day_id):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            workout_day = get_object_or_404(WorkoutDay, id=day_id, workout_plan__owner=request.user)
-
-            existing_exercise_ids = [exercise["id"] for exercise in data if "id" in exercise]
-            WorkoutExercise.objects.filter(day=workout_day).exclude(id__in=existing_exercise_ids).delete()
-
-            for exercise_data in data:
-                if "id" in exercise_data:
-                    exercise = get_object_or_404(WorkoutExercise, id=exercise_data["id"], day=workout_day)
-                else: 
-                    exercise = WorkoutExercise(day=workout_day)
-
-                exercise.exercise = get_object_or_404(Exercise, id=exercise_data["exercise"])
-                exercise.weight = exercise_data["weight"]
-                exercise.sets = exercise_data["sets"]
-                exercise.reps = exercise_data["reps"]
-                exercise.rest_seconds = exercise_data["rest_seconds"]
-                exercise.exercise_order = exercise_data["exercise_order"]
-                exercise.save()
-
-            return JsonResponse({"message": "Exercises updated successfully"})
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-
-    return JsonResponse({"error": "Invalid request"}, status=405)
-
-
-
-
 
 def fetch_all_exercises(request):
     exercises = Exercise.objects.all().values("id", "name")
     return JsonResponse(list(exercises), safe=False)
 
-@csrf_exempt
-def add_exercise_to_day(request, day_id):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        try:
-            day = WorkoutDay.objects.get(id=day_id)
-            exercise = Exercise.objects.get(id=data["exercise_id"])
-
-            new_exercise = WorkoutExercise.objects.create(
-                exercise=exercise,
-                day=day,
-                weight=data["weight"],
-                sets=data["sets"],
-                reps=data["reps"],
-                rest_seconds=data["rest_seconds"],
-                exercise_order=WorkoutExercise.objects.filter(day=day).count() + 1
-            )
-
-            return JsonResponse({"success": True, "exercise_id": new_exercise.id})
-        except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)})
-        
-@csrf_exempt
-@login_required
-def remove_exercise(request, exercise_id):
-    if request.method == 'DELETE':
-        exercise = get_object_or_404(WorkoutExercise, id=exercise_id)
-        
-        workout_plan = exercise.day.workout_plan 
-        
-        if workout_plan.owner != request.user:
-            return JsonResponse({"error": "You are not authorized to delete this day."}, status=403)
-        
-        exercise.delete()
-        return JsonResponse({"message": "Exercise deleted successfully."})
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
-@csrf_exempt
+@csrf_protect
 def update_exercises(request, day_id):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -283,7 +208,7 @@ def update_exercises(request, day_id):
         return JsonResponse({"success": True, "day_order": day.day_order})
     
 @login_required
-@csrf_exempt
+@csrf_protect 
 def set_default_workout(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -297,9 +222,8 @@ def set_default_workout(request):
         return JsonResponse({"message": f"Default workout changed to {workout.name}."}, status=200)
         
 
+################# HOME ##################
 
-
-#home
 @login_required
 def get_default_workout(request):
     
@@ -338,7 +262,7 @@ def get_default_workout(request):
     }
     return JsonResponse(response_data)
 
-@csrf_exempt  
+@csrf_protect 
 @login_required
 def update_weight(request):
     if request.method == "POST":
@@ -359,9 +283,8 @@ def update_weight(request):
             return JsonResponse({"success": True, "new_weight": workout_exercise.weight})
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
-    
 
-@csrf_exempt  
+@csrf_protect  
 @login_required
 def move_to_next_day(request, workout_id): 
     workout_plan = get_object_or_404(WorkoutPlan, id=workout_id, owner=request.user)
