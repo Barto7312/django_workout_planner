@@ -51,14 +51,21 @@ function getDefaultWorkout() {
         } else {
             const daysToWorkout = Math.floor((startDate - currentDate) / (1000 * 60 * 60 * 24));
 
-            let message = `No workout for today! <br> Come back in ${daysToWorkout} ${daysToWorkout === 1 ? 'day' : 'days'}.`;
-            if (daysToWorkout === 0) message = "No workout for today! <br> Come back tomorrow!";
-            document.getElementById("exercisesBox").innerHTML = `<div class="day-message"> ${message} </div>`;
-
-            document.getElementById("buttonBox").style.display = "none";
-            document.getElementById("startButton").disabled = true;
-            document.getElementById("postponeButton").disabled = true;
-            document.getElementById("skipButton").disabled = true;
+            if (daysToWorkout < 0){
+                let message = `You missed your workout by ${daysToWorkout * -1} ${daysToWorkout === 1 ? 'day' : 'days'}.`;
+                document.getElementById("exercisesBox").innerHTML = `<div class="day-message"> ${message} </div>`;
+                document.getElementById("postponeButton").disabled = true;
+                document.getElementById("postponeButton").style.display = "none";
+            }
+            else{
+                let message = `No workout for today! <br> Come back in ${daysToWorkout} ${daysToWorkout === 1 ? 'day' : 'days'}.`;
+                if (daysToWorkout === 0) message = "No workout for today! <br> Come back tomorrow!";
+                document.getElementById("exercisesBox").innerHTML = `<div class="day-message"> ${message} </div>`;
+    
+                document.getElementById("buttonBox").style.display = "none";
+                document.getElementById("startButton").disabled = true;
+                document.getElementById("postponeButton").disabled = true;
+            }
         }
 
         document.getElementById("postponeButton").onclick = async function() {
